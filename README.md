@@ -1,5 +1,16 @@
 # liarsdice
 
+# Run
+
+python __main__.py
+
+OR
+
+# in VSCode
+Open `__main__.py` --> Ctrl + F5
+
+
+
 # To do list
 
 * Ensure logic of lt and gt for bids is correct (Write tests????)
