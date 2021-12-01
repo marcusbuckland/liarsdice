@@ -126,7 +126,8 @@ class Game:
             return response_bid
 
         # Call response
-        if response_string == "Call": return Call()
+        if response_string == "Call":
+            return Call(bidder=bidder, bid=bid, caller=responder)
 
         # ExactCall response
         if response_string == "ExactCall": return
