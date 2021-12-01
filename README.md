@@ -10,6 +10,14 @@ OR
 Open `__main__.py` --> Ctrl + F5
 
 
+# Test
+Really will be a much better way - but for now:
+
+Install testing framework
+`pip install pytest`
+
+Run tests
+`python3 -m pytest ./tests/test_cycle.py`
 
 # To do list
 
