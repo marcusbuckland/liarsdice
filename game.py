@@ -6,6 +6,7 @@ from exactcall import ExactCall
 
 
 def generate_players():
+    """This function creates the Player objects that will be playing the Game."""
     num_players = int(input("How many players are playing?"))
     players = []
 
@@ -17,6 +18,8 @@ def generate_players():
 
 
 def get_response():
+    """This function returns a response string of 'Bid', 'Call', or 'ExactCall'.
+    It is used to get a Player's response after a bid has been made."""
     while True:
         response_string = input("Response: ")
         if response_string in ["Bid", "Call", "ExactCall"]:
@@ -28,22 +31,24 @@ def get_response():
 
 
 def faceoff(bidder, bid, responder):
+    """A faceoff is effectively when a bid has been made and it is time for the responder to play.
+    They can respond with a Bid of higher value, or make a Call or ExactCall (which would end that round)."""
     print(f"{bidder.get_name()} has made a bid of: {bid}.")
     print(f"{responder.get_name()} is responding to {bidder.get_name()}'s bid...")
 
     response_string = get_response()
 
-    # Bid response
+    # Bid
     if response_string == "Bid":
         response_bid = responder.bid(previous_bid=bid)
         print(f"{responder.get_name()} responds with a bid of: {response_bid}")
         return response_bid
 
-    # Call response
+    # Call
     if response_string == "Call":
         return Call(bidder=bidder, bid=bid, caller=responder)
 
-    # ExactCall response
+    # ExactCall
     if response_string == "ExactCall":
         return ExactCall(bidder=bidder, bid=bid, caller=responder)
 
