@@ -1,4 +1,3 @@
-
 class Constants:
     # Constants
     # Maps int to string for bid quantity

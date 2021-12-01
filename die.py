@@ -1,7 +1,9 @@
 import random
 
+
 class Die:
     """ Represents a die object."""
+
     def __init__(self, value=None):
         self.value = value
 

@@ -1,4 +1,4 @@
-# liarsdice
+# Liar's Dice
 
 # Run
 
@@ -13,11 +13,16 @@ Open `__main__.py` --> Ctrl + F5
 
 # To do list
 
+* Implement ExactCall in Game class
+* Write the resolve_exact_call method.
 * Ensure logic of lt and gt for bids is correct (Write tests????)
-* Set up the Game class which is going to be an instance of an actual game of Liar's dice
 * Test equals case for gt and lt
+* Roll for starting positions
+* "Splash screen" method required as the game is played. e.g :
+* Marcus, it is your turn- your roll was: [1, 1, 5, 3, 6], the current bid is:
+* or even some kind of ascii art for the dice?
 
-# Game class
+# Game class__
 
 # Fields ? 
 *  players field which stores the Player objects (list of Player() objects)
@@ -75,9 +80,11 @@ Open `__main__.py` --> Ctrl + F5
 
 
 
-# Can expand the game by changing how the ordering of players is deciding, by rolling dice (see the wikipedia page for rules)
+* Can expand the game by changing how the ordering of players is deciding, by rolling dice (see the wikipedia page for rules)
 
-# Make it so bid values can only be between 1 and 6
-# Make it so bid quantities can only be between 1 and num_dice_remaining
+* Make it so bid values can only be between 1 and 6
+* Make it so bid quantities can only be between 1 and num_dice_remaining
 
-# Should ExactCall class inherit from Call?
+* Should ExactCall class inherit from Call?
+
+
