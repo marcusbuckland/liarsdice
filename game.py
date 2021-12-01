@@ -1,4 +1,3 @@
-from player import Player
 from itertools import cycle
 from bid import Bid
 from player import Player
@@ -26,6 +25,27 @@ def get_bid_response():
             print("Invalid response!")
             print("Choose one of 'Bid', 'Call', or 'ExactCall'")
             continue
+
+
+def faceoff(bidder, bid, responder):
+    print(f"{bidder.get_name()} has made a bid of: {bid}.")
+    print(f"{responder.get_name()} is responding to {bidder.get_name()}'s bid...")
+
+    response_string = get_bid_response()
+
+    # Bid response
+    if response_string == "Bid":
+        response_bid = responder.bid(previous_bid=bid)
+        print(f"{responder.get_name()} responds with a bid of: {response_bid}")
+        return response_bid
+
+    # Call response
+    if response_string == "Call":
+        return Call(bidder=bidder, bid=bid, caller=responder)
+
+    # ExactCall response
+    if response_string == "ExactCall":
+        return ExactCall(bidder=bidder, bid=bid, caller=responder)
 
 
 class Game:
@@ -75,10 +95,9 @@ class Game:
             continue
 
     def play_round(self):
-
-        print("Playing Round!")
         self.all_players_roll_dice()
-        print(self.players)
+        for player in self.players:
+            print(player)
         bidder = self.first_to_act
         print(f"{bidder.get_name()} must make a bid!")
         bid = bidder.bid()
@@ -90,49 +109,22 @@ class Game:
         responder = self.get_next_player()
 
         # response is either instance of Bid, Call, or ExactCall
-        response = self.faceoff(bidder, bid, responder)
+        response = faceoff(bidder, bid, responder)
 
         # Repeatedly have faceoffs until a Call or ExactCall response
         while isinstance(response, Bid):
             bidder, responder = responder, self.get_next_player()
-            response = self.faceoff(bidder, response, responder)
-
-        if isinstance(response, Call):
-            # response was a call. Need to
-            # 1. Check if the bid was won or not.
-            # 2. Make the loser of the faceoff (either bidder of caller) lose a die.
-            # 3. set self.first_to_act = loser.
-            # 4. exit this method.
-            caller = responder
-            self.resolve_call(bidder, bid, caller)
-            pass
+            response = faceoff(bidder, response, responder)
 
         if isinstance(response, ExactCall):
-            exactcall = response
-            self.reslove_exactcall(bid, exactcall)
-            pass
+            self.reslove_exactcall(response)
+            return
+
+        if isinstance(response, Call):
+            self.resolve_call(response)
+            return
 
         # Shouldn't ever reach here....
-
-    def faceoff(self, bidder, bid, responder):
-        print(f"{bidder.get_name()} has made a bid of: {bid}.")
-        print(f"{responder.get_name()} is responding to {bidder.get_name()}'s bid...")
-
-        response_string = get_bid_response()
-
-        # Bid response
-        if response_string == "Bid":
-            response_bid = responder.bid(previous_bid=bid)
-            print(f"{responder.get_name()} responds with a bid of: {response_bid}")
-            return response_bid
-
-        # Call response
-        if response_string == "Call":
-            return Call(bidder=bidder, bid=bid, caller=responder)
-
-        # ExactCall response
-        if response_string == "ExactCall":
-            return ExactCall(bidder=bidder, bid=bid, caller=responder)
 
     def resolve_call(self, call):
         bidder = call.get_bidder()
@@ -140,7 +132,7 @@ class Game:
         caller = call.get_caller()
         bid_quantity = bid.get_quantity()
 
-        total = self.get_total()
+        total = self.get_total(bid)
 
         if total >= bid_quantity:
             # bidder won & caller lost.
