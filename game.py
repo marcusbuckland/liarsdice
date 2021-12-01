@@ -24,6 +24,7 @@ def get_bid_response():
             return response_string
         else:
             print("Invalid response!")
+            print("Choose one of 'Bid', 'Call', or 'ExactCall'")
             continue
 
 
@@ -130,7 +131,8 @@ class Game:
             return Call(bidder=bidder, bid=bid, caller=responder)
 
         # ExactCall response
-        if response_string == "ExactCall": return
+        if response_string == "ExactCall":
+            return ExactCall(bidder=bidder, bid=bid, caller=responder)
 
     def resolve_call(self, bidder, bid, caller):
         bid_quantity = bid.get_quantity()
