@@ -117,7 +117,7 @@ class Game:
             response = faceoff(bidder, response, responder)
 
         if isinstance(response, ExactCall):
-            self.reslove_exactcall(response)
+            self.resolve_exactcall(response)
             return
 
         if isinstance(response, Call):
@@ -153,13 +153,13 @@ class Game:
             else:
                 self.first_to_act = caller
 
-    def reslove_exactcall(self, exactcall):
+    def resolve_exactcall(self, exactcall):
         bidder = exactcall.get_bidder()
         bid = exactcall.get_bid()
         caller = exactcall.get_caller()
         bid_quantity = bid.get_quantity()
 
-        total = self.get_total()
+        total = self.get_total(bid)
 
         if total == bid_quantity:
             # caller won the ExactCall
