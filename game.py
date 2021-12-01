@@ -16,7 +16,7 @@ def generate_players():
     return players
 
 
-def get_bid_response():
+def get_response():
     while True:
         response_string = input("Response: ")
         if response_string in ["Bid", "Call", "ExactCall"]:
@@ -31,7 +31,7 @@ def faceoff(bidder, bid, responder):
     print(f"{bidder.get_name()} has made a bid of: {bid}.")
     print(f"{responder.get_name()} is responding to {bidder.get_name()}'s bid...")
 
-    response_string = get_bid_response()
+    response_string = get_response()
 
     # Bid response
     if response_string == "Bid":
@@ -184,6 +184,4 @@ class Game:
     def get_total(self, bid):
         values = self.get_all_dice_values()
         total = values.count(1)  # 1's count as everything.
-        if bid.not_ace_bid():
-            total += values.count(bid.get_value())
-        return total
+        return total if bid.not_ace_bid() else total + values.count(bid.get_value)
