@@ -22,7 +22,7 @@ class Player:
         return self.dice
 
     def get_dice_values(self):
-        return [d.value for d in self.dice] # First go mate!
+        return [d.value for d in self.dice]
 
     def roll(self):
         for die in self.dice:

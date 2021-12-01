@@ -108,8 +108,8 @@ class Game:
             pass
 
         if isinstance(response, ExactCall):
-            exact_call = response
-            self.reslove_exactcall(bid, exact_call)
+            exactcall = response
+            self.reslove_exactcall(bid, exactcall)
             pass
 
         # Shouldn't ever reach here....
@@ -134,34 +134,64 @@ class Game:
         if response_string == "ExactCall":
             return ExactCall(bidder=bidder, bid=bid, caller=responder)
 
-    def resolve_call(self, bidder, bid, caller):
+    def resolve_call(self, call):
+        bidder = call.get_bidder()
+        bid = call.get_bid()
+        caller = call.get_caller()
         bid_quantity = bid.get_quantity()
-        bid_value = bid.get_value()
-        values = self.get_all_dice_values()
-        total = values.count(1)  # 1's count as everything.
 
-        if bid.not_ace_bid():
-            total += values.count(bid_value)
+        total = self.get_total()
 
         if total >= bid_quantity:
-            # Bidder won.
+            # bidder won & caller lost.
             caller.lose_die()
-            # Now I need to be careful because caller may have just lost.
+
+            # Was caller just eliminated from game?
             if caller.is_remaining():
                 self.first_to_act = caller
             else:
                 self.first_to_act = self.get_next_player()
         else:
-            # Bidder lost.
+            # caller won & bidder lost.
             bidder.lose_die()
-            # Now I need to be careful...
+
+            # Was bidder just eliminated from game?
             if bidder.is_remaining():
                 self.first_to_act = bidder
             else:
                 self.first_to_act = caller
+
+    def reslove_exactcall(self, exactcall):
+        bidder = exactcall.get_bidder()
+        bid = exactcall.get_bid()
+        caller = exactcall.get_caller()
+        bid_quantity = bid.get_quantity()
+
+        total = self.get_total()
+
+        if total == bid_quantity:
+            # caller won the ExactCall
+            caller.gain_die()
+            self.first_to_act = bidder
+        else:
+            # caller lost the ExactCall
+            caller.lose_die()
+
+            # Was caller just eliminated from game?
+            if caller.is_remaining():
+                self.first_to_act = caller
+            else:
+                self.first_to_act = self.get_next_player()
 
     def get_all_dice_values(self):
         dice_values = []
         for player in self.players:
             dice_values += player.get_dice_values()
         return dice_values
+
+    def get_total(self, bid):
+        values = self.get_all_dice_values()
+        total = values.count(1)  # 1's count as everything.
+        if bid.not_ace_bid():
+            total += values.count(bid.get_value())
+        return total
