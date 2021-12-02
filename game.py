@@ -82,16 +82,20 @@ class Game:
                 p1_roll = sorted_order[0][1]
                 p2_roll = sorted_order[1][1]
                 if p1_roll != p2_roll:
-                    sorted_players.append(sorted_order.pop(0)[0])
+                    idx = 0 if p1_roll > p2_roll else 1
+                    sorted_players.append(sorted_order.pop(idx)[0])
                     continue
                 else:
                     # Re-roll to break the tie.
-                    sorted_order[0][1] = random.randint(1, 6)
-                    sorted_order[1][1] = random.randint(1, 6)
+                    p1_reroll = random.randint(1, 6)
+                    p2_reroll = random.randint(1, 6)
+                    if p1_reroll != p2_reroll:
+                        idx = 0 if p1_reroll > p2_reroll else 1
+                        sorted_players.append(sorted_order.pop(idx)[0])
+                        continue
 
             else:
                 # Only one player left.
-
                 sorted_players.append(sorted_order.pop()[0])
 
         self.players = sorted_players
