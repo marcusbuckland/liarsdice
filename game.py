@@ -9,12 +9,10 @@ from exactcall import ExactCall
 def generate_players(player_names=None):
     """This function creates the Player objects that will be playing the Game."""
     players = []
-    print(player_names)
     if player_names:
-        # Useful for tests when we can pass in player_names directly.
+        # Useful for creating games without user input.
         players = [Player(name) for name in player_names]
     else:
-        # Get player input
         num_players = int(input("How many players are playing?"))
         # Create the Player objects and store them inside players list
         for i in range(num_players):
@@ -38,8 +36,8 @@ def get_response():
 
 
 def faceoff(bidder, bid, responder):
-    """A faceoff is effectively when a bid has been made and it is time for the responder to play.
-    They can respond with a Bid of higher value, or make a Call or ExactCall (which would end that round)."""
+    """A faceoff is effectively when a bid has been made, and it is time for the responder to play.
+    They can respond with either a Bid of higher value, a Call, or ExactCall."""
     print(f"{bidder.get_name()} has made a bid of: {bid}.")
     print(f"{responder.get_name()} is responding to {bidder.get_name()}'s bid...")
 
@@ -77,7 +75,7 @@ class Game:
         return return_string
 
     def get_player_order(self):
-        """Each player rolls a dice to determine the order of play- Highest roll starts first.
+        """Each player rolls a die to determine the order of play- The Highest roll starts first.
         If players roll the same value, a re-roll occurs until the tie is broken."""
         sorted_players = []
         order = [[player, random.randint(1, 6)] for player in self.players]
@@ -116,14 +114,15 @@ class Game:
         return self.first_to_act
 
     def players_remaining(self):
+        """Returns the number of players still playing"""
         num_remaining = 0
         for player in self.players:
             if player.is_remaining():
                 num_remaining += 1
-
         return num_remaining
 
     def get_next_player(self):
+        """Returns the Player that will be next to act"""
         next_player = next(self.player_cycle)
         if next_player.is_remaining():
             return next_player
@@ -131,14 +130,18 @@ class Game:
             return self.get_next_player()
 
     def all_players_roll_dice(self):
+        """Every player in the game with dice left will roll.
+        Used at the beginning of a round."""
         for player in self.players:
             player.roll()
 
     def reset_cycle(self):
+        """Gets the player_cycle to the appropriate position."""
         while next(self.player_cycle) is not self.first_to_act:
             continue
 
     def play_round(self):
+        """Plays a single round of Liar's Dice"""
         self.all_players_roll_dice()
         for player in self.players:
             print(player)
@@ -171,14 +174,15 @@ class Game:
         # Shouldn't ever reach here....
 
     def resolve_call(self, call):
+        """Check which player won the faceoff after a Call response."""
         bidder = call.get_bidder()
         bid = call.get_bid()
         caller = call.get_caller()
         bid_quantity = bid.get_quantity()
 
-        total = self.get_total(bid)
+        quantity = self.get_quantity(bid)
 
-        if total >= bid_quantity:
+        if quantity >= bid_quantity:
             # bidder won & caller lost.
             caller.lose_die()
 
@@ -198,14 +202,15 @@ class Game:
                 self.first_to_act = caller
 
     def resolve_exactcall(self, exactcall):
+        """Check which player won the faceoff after an ExactCall response."""
         bidder = exactcall.get_bidder()
         bid = exactcall.get_bid()
         caller = exactcall.get_caller()
         bid_quantity = bid.get_quantity()
 
-        total = self.get_total(bid)
+        quantity = self.get_quantity(bid)
 
-        if total == bid_quantity:
+        if quantity == bid_quantity:
             # caller won the ExactCall
             caller.gain_die()
             self.first_to_act = bidder
@@ -220,12 +225,14 @@ class Game:
                 self.first_to_act = self.get_next_player()
 
     def get_all_dice_values(self):
+        """Returns a list of every dice value (int) that was rolled in that round."""
         dice_values = []
         for player in self.players:
             dice_values += player.get_dice_values()
         return dice_values
 
-    def get_total(self, bid):
+    def get_quantity(self, bid):
+        """Returns the quantity of dice that count for a bid."""
         values = self.get_all_dice_values()
-        total = values.count(1)  # 1's count as everything.
-        return total if bid.is_ace_bid() else total + values.count(bid.get_value())
+        quantity = values.count(1)  # 1's count as everything.
+        return quantity if bid.is_ace_bid() else quantity + values.count(bid.get_value())
