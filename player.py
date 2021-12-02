@@ -7,7 +7,7 @@ class Player:
 
     def __init__(self, name):
         self.name = name
-        self.dice = [Die() for i in range(5)]
+        self.dice = [Die() for _ in range(5)]
 
     def __repr__(self):
         return_string = ""
