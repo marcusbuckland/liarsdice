@@ -6,14 +6,15 @@ from call import Call
 from exactcall import ExactCall
 
 
-def generate_players(self, player_names=None):
+def generate_players(player_names=None):
     """This function creates the Player objects that will be playing the Game."""
-    if player_names is None:
-        player_names = []
     players = []
-    if len(player_names) != 0:
+    print(player_names)
+    if player_names:
+        # Useful for tests when we can pass in player_names directly.
         players = [Player(name) for name in player_names]
     else:
+        # Get player input
         num_players = int(input("How many players are playing?"))
         # Create the Player objects and store them inside players list
         for i in range(num_players):
@@ -64,8 +65,6 @@ class Game:
     https://en.wikipedia.org/wiki/Dudo"""
 
     def __init__(self, player_names=None):
-        if player_names is None:
-            player_names = []
         self.players = generate_players(player_names)
         self.get_player_order()
         self.player_cycle = cycle(self.players)
