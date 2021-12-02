@@ -92,23 +92,28 @@ class Game:
                     continue
                 else:
                     # Re-roll to break the tie.
-                    sorted_order[0][1] = random.randint(1, 6)
-                    sorted_order[1][1] = random.randint(1, 6)
+                    p1_reroll = random.randint(1, 6)
+                    p2_reroll = random.randint(1, 6)
+                    if p1_reroll != p2_reroll:
+                        idx = 0 if p1_reroll > p2_reroll else 1
+                        sorted_players.append(sorted_order.pop(idx)[0])
+                        continue
 
             else:
                 # Only one player left.
-
                 sorted_players.append(sorted_order.pop()[0])
 
         self.players = sorted_players
 
     def is_finished(self):
+        """True if the game is finished."""
         return self.players_remaining() <= 1
 
     def get_players(self):
         return self.players
 
     def get_first_to_act(self):
+        """Returns the Player that is first to act in a round"""
         return self.first_to_act
 
     def players_remaining(self):
@@ -224,4 +229,4 @@ class Game:
     def get_total(self, bid):
         values = self.get_all_dice_values()
         total = values.count(1)  # 1's count as everything.
-        return total if bid.not_ace_bid() else total + values.count(bid.get_value)
+        return total if bid.is_ace_bid() else total + values.count(bid.get_value())
