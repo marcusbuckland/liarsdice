@@ -11,7 +11,7 @@ class Player:
 
     def __repr__(self):
         return_string = ""
-        return_string += str("Name: ") + self.name + " "
+        return_string += self.name + " "
         return_string += str([d.value for d in self.dice])
         return return_string
 

@@ -4,8 +4,8 @@ import random
 class Die:
     """ Represents a die object."""
 
-    def __init__(self, value=random.randint(1, 6)):
-        self.value = value
+    def __init__(self):
+        self.value = random.randint(1, 6)
 
     def __repr__(self):
         return str("Die: " + str(self.value))
