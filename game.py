@@ -1,3 +1,4 @@
+import random
 from itertools import cycle
 from bid import Bid
 from player import Player
@@ -20,9 +21,10 @@ def generate_players():
 def get_response():
     """This function returns a response string of 'Bid', 'Call', or 'ExactCall'.
     It is used to get a Player's response after a bid has been made."""
+    valid_responses = ["Bid", "Call", "ExactCall"]
     while True:
         response_string = input("Response: ")
-        if response_string in ["Bid", "Call", "ExactCall"]:
+        if response_string in valid_responses:
             return response_string
         else:
             print("Invalid response!")
@@ -54,18 +56,45 @@ def faceoff(bidder, bid, responder):
 
 
 class Game:
-    """ Represents an actual instance of the game Liar's Dice (Dudo)."""
+    """ Represents an actual instance of the game Liar's Dice (Dudo).
+    https://en.wikipedia.org/wiki/Dudo"""
 
     def __init__(self):
         self.players = generate_players()
+        self.get_player_order()
         self.player_cycle = cycle(self.players)
-        self.first_to_act = self.get_next_player()  # Fine for now- but we can expand this further (roll for start)
+        self.first_to_act = self.get_next_player()
 
     def __repr__(self):
         return_string = ""
         for player in self.players:
             return_string += str(player) + "\n"
         return return_string
+
+    def get_player_order(self):
+        """Each player rolls a dice to determine the order of play- Highest roll starts first.
+        If players roll the same value, a re-roll occurs until the tie is broken."""
+        sorted_players = []
+        order = [[player, random.randint(1, 6)] for player in self.players]
+        sorted_order = sorted(order, key=lambda elem: elem[1], reverse=True)
+        while sorted_order:
+            if len(sorted_order) > 1:
+                p1_roll = sorted_order[0][1]
+                p2_roll = sorted_order[1][1]
+                if p1_roll != p2_roll:
+                    sorted_players.append(sorted_order.pop(0)[0])
+                    continue
+                else:
+                    # Re-roll to break the tie.
+                    sorted_order[0][1] = random.randint(1, 6)
+                    sorted_order[1][1] = random.randint(1, 6)
+
+            else:
+                # Only one player left.
+
+                sorted_players.append(sorted_order.pop()[0])
+
+        self.players = sorted_players
 
     def is_finished(self):
         return self.players_remaining() <= 1
