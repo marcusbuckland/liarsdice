@@ -163,13 +163,8 @@ class Game:
             bidder, responder = responder, self.get_next_player()
             response = faceoff(bidder, response, responder)
 
-        if isinstance(response, ExactCall):
-            self.resolve_exactcall(response)
-            return
-
-        if isinstance(response, Call):
-            self.resolve_call(response)
-            return
+        # Must be call or exact call.
+        self.resolve_call(response)
 
         # Shouldn't ever reach here....
 
@@ -182,47 +177,42 @@ class Game:
 
         quantity = self.get_quantity(bid)
 
-        if quantity >= bid_quantity:
-            # bidder won & caller lost.
-            caller.lose_die()
-
-            # Was caller just eliminated from game?
-            if caller.is_remaining():
-                self.first_to_act = caller
-            else:
-                self.first_to_act = self.get_next_player()
-        else:
-            # caller won & bidder lost.
-            bidder.lose_die()
-
-            # Was bidder just eliminated from game?
-            if bidder.is_remaining():
+        if isinstance(call, ExactCall):
+            if quantity == bid_quantity:
+                # caller won the ExactCall
+                bidder.lose_die()
+                caller.gain_die()
                 self.first_to_act = bidder
             else:
-                self.first_to_act = caller
+                # caller lost the ExactCall
+                caller.lose_die()
 
-    def resolve_exactcall(self, exactcall):
-        """Check which player won the faceoff after an ExactCall response."""
-        bidder = exactcall.get_bidder()
-        bid = exactcall.get_bid()
-        caller = exactcall.get_caller()
-        bid_quantity = bid.get_quantity()
-
-        quantity = self.get_quantity(bid)
-
-        if quantity == bid_quantity:
-            # caller won the ExactCall
-            caller.gain_die()
-            self.first_to_act = bidder
+                # Was caller just eliminated from game?
+                if caller.is_remaining():
+                    self.first_to_act = caller
+                else:
+                    self.first_to_act = self.get_next_player()
         else:
-            # caller lost the ExactCall
-            caller.lose_die()
+            # response is just a regular Call
 
-            # Was caller just eliminated from game?
-            if caller.is_remaining():
-                self.first_to_act = caller
+            if quantity >= bid_quantity:
+                # bidder won & caller lost.
+                caller.lose_die()
+
+                # Was caller just eliminated from game?
+                if caller.is_remaining():
+                    self.first_to_act = caller
+                else:
+                    self.first_to_act = self.get_next_player()
             else:
-                self.first_to_act = self.get_next_player()
+                # caller won & bidder lost.
+                bidder.lose_die()
+
+                # Was bidder just eliminated from game?
+                if bidder.is_remaining():
+                    self.first_to_act = bidder
+                else:
+                    self.first_to_act = caller
 
     def get_all_dice_values(self):
         """Returns a list of every dice value (int) that was rolled in that round."""
