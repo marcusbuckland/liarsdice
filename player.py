@@ -52,9 +52,6 @@ class Player:
             # Bid was too low- make another bid.
             return self.bid(previous_bid)
 
-    def call(self, previous_bid):
-        pass  # To implement
-
     def has_lost(self):
         return not self.dice
 
