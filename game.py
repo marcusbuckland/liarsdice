@@ -16,7 +16,7 @@ def generate_players(player_names=None):
     else:
         num_players = int(input("How many players are playing?"))
         # Create the Player objects and store them inside players list
-        for i in range(num_players):
+        for _ in range(num_players):
             name = input("Player's name?")
             players.append(Player(name))
     return players
@@ -25,35 +25,33 @@ def generate_players(player_names=None):
 def get_response():
     """This function returns a response string of 'Bid', 'Call', or 'ExactCall'.
     It is used to get a Player's response after a bid has been made."""
-    valid_responses = ["Bid", "Call", "ExactCall"]
     while True:
         response_string = input("How do you respond? (can be 'Bid', Call', or 'ExactCall'): ")
-        if response_string in valid_responses:
+        if response_string in Constants.valid_responses:
             return response_string
         else:
-            print("Invalid response!")
-            print("Choose one of 'Bid', 'Call', or 'ExactCall'")
+            print(f"{response_string} is not a valid response!")
             continue
 
 
 def faceoff(bidder, bid, responder):
-    """A faceoff is effectively when a bid has been made, and it is time for the responder to play.
+    """A face-off is effectively when a bid has been made, and it is time for the responder to play.
     They can respond with either a Bid of higher value, a Call, or ExactCall."""
     print(f"\n\n\n\n\n\n{bidder.get_name()} has made a bid of: {bid}.")
     print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
 
     response_string = get_response()
 
-    # Bid
+    # Bid response
     if response_string == "Bid":
         response_bid = responder.bid(previous_bid=bid)
         return response_bid
 
-    # Call
+    # Call response
     if response_string == "Call":
         return Call(bidder=bidder, bid=bid, caller=responder)
 
-    # ExactCall
+    # ExactCall response
     if response_string == "ExactCall":
         return ExactCall(bidder=bidder, bid=bid, caller=responder)
 
@@ -69,10 +67,10 @@ class Game:
         self.first_to_act = self.get_next_player()
 
     def __repr__(self):
-        return_string = ""
+        return_str = ""
         for player in self.players:
-            return_string += str(player) + "\n"
-        return return_string
+            return_str += str(player) + "\n"
+        return return_str
 
     def get_player_order(self):
         """Each player rolls a die to determine the order of play- The Highest roll starts first.
@@ -107,6 +105,7 @@ class Game:
         return self.players_remaining() <= 1
 
     def not_finished(self):
+        """True if the game is not finished."""
         return not self.is_finished()
 
     def get_players(self):
@@ -163,21 +162,19 @@ class Game:
 
         responder = self.get_next_player()
 
-        # response is either instance of Bid, Call, or ExactCall
+        # response is either Bid, Call, or ExactCall object
         response = faceoff(bidder, bid, responder)
 
-        # Repeatedly have faceoffs until a Call or ExactCall response
+        # Repeatedly have face-offs until a Call or ExactCall response
         while isinstance(response, Bid):
             bidder, responder = responder, self.get_next_player()
             response = faceoff(bidder, response, responder)
 
-        # Must be call or exact call.
+        # Call or ExactCall response- resolve and end round.
         self.resolve_call(response)
 
-        # Shouldn't ever reach here....
-
     def resolve_call(self, call):
-        """Check which player won the faceoff after a Call response."""
+        """Check which player won the face-off after a Call response."""
         bidder = call.get_bidder()
         bid = call.get_bid()
         caller = call.get_caller()
@@ -199,8 +196,6 @@ class Game:
 
         quantity = self.get_quantity(bid)
         quantity_str = Constants.quantity_words[quantity]
-
-
 
         if isinstance(call, ExactCall):
             if quantity != 1:
@@ -267,3 +262,6 @@ class Game:
         values = self.get_all_dice_values()
         quantity = values.count(1)  # 1's count as everything.
         return quantity if bid.is_ace_bid() else quantity + values.count(bid.get_value())
+
+    def get_dice_remaining_amount(self):
+        return len(self.get_all_dice_values())
