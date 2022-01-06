@@ -41,6 +41,7 @@ def faceoff(bidder, bid, responder):
     They can respond with either a Bid of higher value, a Call, or ExactCall."""
     print(f"{bidder.get_name()} has made a bid of: {bid}.")
     print(f"\n{responder.get_name()} is responding to {bidder.get_name()}'s bid...")
+    print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
 
     response_string = get_response()
 
@@ -153,6 +154,7 @@ class Game:
 
         bidder = self.first_to_act
         print(f"{bidder.get_name()} must make a bid!")
+        print(f"{bidder.get_name()} you rolled: {bidder.get_dice()}")
         bid = bidder.bid()
 
         # Ensure that self.player_cycle is set to the position of bidder so that responder is

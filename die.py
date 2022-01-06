@@ -8,7 +8,7 @@ class Die:
         self.value = random.randint(1, 6)
 
     def __repr__(self):
-        return str("Die: " + str(self.value))
+        return str(self.value)
 
     def roll(self):
         self.value = random.randint(1, 6)
