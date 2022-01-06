@@ -34,11 +34,12 @@ def get_response():
             continue
 
 
-def faceoff(bidder, bid, responder):
+def faceoff(bidder, bid, responder, unknown_dice_quantity):
     """A face-off is effectively when a bid has been made, and it is time for the responder to play.
     They can respond with either a Bid of higher value, a Call, or ExactCall."""
     print(f"\n\n\n\n\n\n{bidder.get_name()} has made a bid of: {bid}.")
     print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
+    print(f"The expected value of {bid} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity)}")
 
     response_string = get_response()
 
@@ -54,6 +55,16 @@ def faceoff(bidder, bid, responder):
     # ExactCall response
     if response_string == "ExactCall":
         return ExactCall(bidder=bidder, bid=bid, caller=responder)
+
+
+def get_expected_value(responder, bid, unknown_dice_quantity):
+    """Returns the expected value of a bid value given a responder knows the quantity of that bid value
+    for their own set of dice."""
+    dice_values = responder.get_dice_values()
+    expected = dice_values.count(1) if bid.is_ace_bid() else \
+        dice_values.count(1) + responder.get_dice_values().count(bid.get_value())
+    expected += unknown_dice_quantity / 6 if bid.is_ace_bid() else unknown_dice_quantity / 3
+    return round(expected,2)
 
 
 class Game:
@@ -163,12 +174,14 @@ class Game:
         responder = self.get_next_player()
 
         # response is either Bid, Call, or ExactCall object
-        response = faceoff(bidder, bid, responder)
+        unknown_dice_quantity = self.get_dice_remaining_amount() - len(responder.get_dice())
+        response = faceoff(bidder, bid, responder, unknown_dice_quantity)
 
         # Repeatedly have face-offs until a Call or ExactCall response
         while isinstance(response, Bid):
             bidder, responder = responder, self.get_next_player()
-            response = faceoff(bidder, response, responder)
+            unknown_dice_quantity = self.get_dice_remaining_amount() - len(responder.get_dice())
+            response = faceoff(bidder, response, responder, unknown_dice_quantity)
 
         # Call or ExactCall response- resolve and end round.
         self.resolve_call(response)
@@ -264,4 +277,5 @@ class Game:
         return quantity if bid.is_ace_bid() else quantity + values.count(bid.get_value())
 
     def get_dice_remaining_amount(self):
+        """Returns the quantity of dice that remain."""
         return len(self.get_all_dice_values())

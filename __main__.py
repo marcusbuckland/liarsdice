@@ -1,7 +1,7 @@
 from game import Game
 
 if __name__ == '__main__':
-    game = Game(['Marcus','Bede'])
+    game = Game(['Marcus','Bede', 'Steph', 'Kim'])
     round_counter = 1
     while game.not_finished():
         print("=============================")
