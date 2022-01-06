@@ -57,3 +57,9 @@ class Player:
 
     def is_remaining(self):
         return bool(self.dice)
+
+    def get_amount(self, bid):
+        dice_values = self.get_dice_values()
+        amount = dice_values.count(1)
+        return amount if bid.is_ace_bid() else amount + dice_values.count(bid.get_value())
+

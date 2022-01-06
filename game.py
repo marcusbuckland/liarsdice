@@ -4,13 +4,14 @@ from bid import Bid
 from player import Player
 from call import Call
 from exactcall import ExactCall
+from constants import Constants
 
 
 def generate_players(player_names=None):
     """This function creates the Player objects that will be playing the Game."""
     players = []
     if player_names:
-        # Useful for creating games without user input.
+        # Useful for creating games without user input (e.g tests).
         players = [Player(name) for name in player_names]
     else:
         num_players = int(input("How many players are playing?"))
@@ -26,7 +27,7 @@ def get_response():
     It is used to get a Player's response after a bid has been made."""
     valid_responses = ["Bid", "Call", "ExactCall"]
     while True:
-        response_string = input("Response: ")
+        response_string = input("Response (can be 'Bid', Call', or 'ExactCall': ")
         if response_string in valid_responses:
             return response_string
         else:
@@ -39,14 +40,13 @@ def faceoff(bidder, bid, responder):
     """A faceoff is effectively when a bid has been made, and it is time for the responder to play.
     They can respond with either a Bid of higher value, a Call, or ExactCall."""
     print(f"{bidder.get_name()} has made a bid of: {bid}.")
-    print(f"{responder.get_name()} is responding to {bidder.get_name()}'s bid...")
+    print(f"\n{responder.get_name()} is responding to {bidder.get_name()}'s bid...")
 
     response_string = get_response()
 
     # Bid
     if response_string == "Bid":
         response_bid = responder.bid(previous_bid=bid)
-        print(f"{responder.get_name()} responds with a bid of: {response_bid}")
         return response_bid
 
     # Call
@@ -106,6 +106,9 @@ class Game:
         """True if the game is finished."""
         return self.players_remaining() <= 1
 
+    def not_finished(self):
+        return not self.is_finished()
+
     def get_players(self):
         return self.players
 
@@ -143,8 +146,11 @@ class Game:
     def play_round(self):
         """Plays a single round of Liar's Dice"""
         self.all_players_roll_dice()
-        for player in self.players:
-            print(player)
+
+        # Delete this eventually. This is like "god mode", can see what everyone has...
+        # for player in self.players:
+        #     print(player)
+
         bidder = self.first_to_act
         print(f"{bidder.get_name()} must make a bid!")
         bid = bidder.bid()
@@ -175,7 +181,21 @@ class Game:
         caller = call.get_caller()
         bid_quantity = bid.get_quantity()
 
+        print(f"{caller.get_name()} has called {bidder.get_name()}'s bid of {bid}\n")
+
+        for player in self.players:
+            print(player)
+            bid_value = Constants.dice_words[bid.get_value()] if player.get_amount(bid) != 1 else Constants.singular_dice_words[bid.get_value()]
+            amount = Constants.quantity_words[player.get_amount(bid)].lower()
+            print(f"{player.get_name()} has {amount} {bid_value}\n")
+
         quantity = self.get_quantity(bid)
+        quantity_str = Constants.quantity_words[quantity]
+
+        if quantity != 1:
+            print(f"There were {quantity_str.lower()} {Constants.dice_words[bid.get_value()]} in that round.")
+        else:
+            print(f"There was {quantity_str.lower()} {Constants.singular_dice_words[bid.get_value()]} in that round.")
 
         if isinstance(call, ExactCall):
             if quantity == bid_quantity:
@@ -197,21 +217,25 @@ class Game:
 
             if quantity >= bid_quantity:
                 # bidder won & caller lost.
+                print(f"{bidder.get_name()} won their bid of {bid}- {caller.get_name()} loses a die!\n")
                 caller.lose_die()
 
                 # Was caller just eliminated from game?
                 if caller.is_remaining():
                     self.first_to_act = caller
                 else:
+                    print(f"{caller.get_name()} has no dice remaining!\n")
                     self.first_to_act = self.get_next_player()
             else:
                 # caller won & bidder lost.
+                print(f"{bidder.get_name()} lost their bid of {bid} and loses a die.\n")
                 bidder.lose_die()
 
                 # Was bidder just eliminated from game?
                 if bidder.is_remaining():
                     self.first_to_act = bidder
                 else:
+                    print(f"{bidder.get_name()} has no dice remaining!\n")
                     self.first_to_act = caller
 
     def get_all_dice_values(self):
