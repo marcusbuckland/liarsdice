@@ -16,9 +16,9 @@ def binomial_coefficient(n, k):
     """Returns the number of combinations of choosing k from n"""
     return factorial(n) / (factorial(n - k) * factorial(k))
 
-def binomial_pdf(success, trials, is_ace_bid):
-    """Returns the probability density function of the Binomial Distribution"""
-
+def binomial_pmf(k, n, p):
+    """Returns the probability mass function of the Binomial Distribution"""
+    return binomial_coefficient(n, k) * p**k * (1-p)**(n-k)
 
 def generate_players(player_names=None):
     """This function creates the Player objects that will be playing the Game."""
