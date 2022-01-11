@@ -6,6 +6,12 @@ from call import Call
 from exactcall import ExactCall
 from constants import Constants
 
+def factorial(n):
+    """Returns the factorial of a number"""
+    if n == 0 or n == 1:
+        return 1
+    return n * factorial(n-1)
+
 
 def generate_players(player_names=None):
     """This function creates the Player objects that will be playing the Game."""
