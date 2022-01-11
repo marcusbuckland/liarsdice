@@ -20,6 +20,14 @@ def binomial_pmf(k, n, p):
     """Returns the probability mass function of the Binomial Distribution"""
     return binomial_coefficient(n, k) * p**k * (1-p)**(n-k)
 
+def binomial_cdf(k, n, p, lower_tail=False):
+    """Returns the cumulative distribution function of the Binomial Distribution"""
+    return sum([binomial_pmf(i, n, p) for i in range(0, k+1)])
+
+def get_probability(bid, unknown_dice_quantity):
+    prob = 0.0
+    return prob
+
 def generate_players(player_names=None):
     """This function creates the Player objects that will be playing the Game."""
     players = []
@@ -53,6 +61,7 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity):
     print(f"\n\n\n\n\n\n{bidder.get_name()} has made a bid of: {bid}.")
     print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
     print(f"The expected value of {bid} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity)}")
+    print(f"The probability of this bid being successful is: {get_probability(bid, unknown_dice_quantity):.4f}")
 
     response_string = get_response()
 
