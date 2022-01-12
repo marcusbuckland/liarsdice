@@ -50,6 +50,7 @@ class Player:
             return bid
         else:
             # Bid was too low- make another bid.
+            print("Bid must be higher than previous bid!")
             return self.bid(previous_bid)
 
     def has_lost(self):
@@ -62,4 +63,7 @@ class Player:
         dice_values = self.get_dice_values()
         amount = dice_values.count(1)
         return amount if bid.is_ace_bid() else amount + dice_values.count(bid.get_value())
+
+    def get_dice_quantity(self):
+        return len(self.dice)
 
