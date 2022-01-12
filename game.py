@@ -24,9 +24,10 @@ def binomial_cdf(k, n, p):
     """Returns the cumulative distribution function of the Binomial Distribution"""
     return sum([binomial_pmf(i, n, p) for i in range(0, k+1)])
 
-def get_probability(bid, unknown_dice_quantity):
+def get_probability(bid, unknown_dice_quantity, responder):
     """Returns the probability of a Bid's success."""
-    k = bid.get_quantity()
+    k = bid.get_quantity() - responder.get_amount(bid)
+    if k < 1 : return 1.00 # If responder has at least the quantity of dice of the bid then 100% chance of bid success.
     n = unknown_dice_quantity
     p = Constants.ACE_PROBABILITY if bid.is_ace_bid() else Constants.NOT_ACE_PROBABILITY
     prob = 1 - binomial_cdf(k, n, p)
@@ -66,7 +67,7 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity):
     print(f"\n\n\n\n\n\n{bidder.get_name()} has made a bid of: {bid}.")
     print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
     print(f"The expected value of {bid} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity):.2f}")
-    print(f"The probability of this bid being successful is: {get_probability(bid, unknown_dice_quantity):.4f}")
+    print(f"The probability of this bid being successful is: {get_probability(bid, unknown_dice_quantity, responder):.4f}")
 
     response_string = get_response()
 
