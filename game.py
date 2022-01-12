@@ -20,12 +20,17 @@ def binomial_pmf(k, n, p):
     """Returns the probability mass function of the Binomial Distribution"""
     return binomial_coefficient(n, k) * p**k * (1-p)**(n-k)
 
-def binomial_cdf(k, n, p, lower_tail=False):
+def binomial_cdf(k, n, p):
     """Returns the cumulative distribution function of the Binomial Distribution"""
     return sum([binomial_pmf(i, n, p) for i in range(0, k+1)])
 
 def get_probability(bid, unknown_dice_quantity):
-    prob = 0.0
+    """Returns the probability of a Bid's success."""
+    k = bid.get_quantity()
+    n = unknown_dice_quantity
+    p = Constants.ACE_PROBABILITY if bid.is_ace_bid() else Constants.NOT_ACE_PROBABILITY
+    prob = 1 - binomial_cdf(k, n, p)
+    prob += binomial_pmf(k, n, p) # Include probability of exactly k dice.
     return prob
 
 def generate_players(player_names=None):
@@ -60,7 +65,7 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity):
     They can respond with either a Bid of higher value, a Call, or ExactCall."""
     print(f"\n\n\n\n\n\n{bidder.get_name()} has made a bid of: {bid}.")
     print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
-    print(f"The expected value of {bid} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity)}")
+    print(f"The expected value of {bid} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity):.2f}")
     print(f"The probability of this bid being successful is: {get_probability(bid, unknown_dice_quantity):.4f}")
 
     response_string = get_response()
@@ -82,11 +87,10 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity):
 def get_expected_value(responder, bid, unknown_dice_quantity):
     """Returns the expected value of a bid value given a responder knows the quantity of that bid value
     for their own set of dice."""
-    dice_values = responder.get_dice_values()
-    expected = dice_values.count(1) if bid.is_ace_bid() else \
-        dice_values.count(1) + responder.get_dice_values().count(bid.get_value())
-    expected += unknown_dice_quantity / 6 if bid.is_ace_bid() else unknown_dice_quantity / 3
-    return round(expected,2)
+    expected = responder.get_amount(bid)
+    expected += unknown_dice_quantity * Constants.ACE_PROBABILITY if bid.is_ace_bid() \
+        else unknown_dice_quantity * Constants.NOT_ACE_PROBABILITY
+    return expected
 
 
 class Game:
