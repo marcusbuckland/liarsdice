@@ -21,18 +21,18 @@ def binomial_pmf(k, n, p):
     P(X = k | n,p) where X ~ Bin(n, p)"""
     return binomial_coefficient(n, k) * p**k * (1-p)**(n-k)
 
-def binomial_cdf(k, n, p):
+def binomial_cdf(k, n, p, lower_tail=True):
     """Returns the cumulative distribution function of the Binomial Distribution
     P(X <= k | n,p) where X ~ Bin(n, p) """
-    return sum([binomial_pmf(i, n, p) for i in range(0, k+1)])
+    prob = sum([binomial_pmf(i, n, p) for i in range(0, k+1)])
+    return prob if lower_tail else (1-prob)
 
 def get_probability(bid, n, responder):
     """Returns the probability of a Bid's success."""
     k = bid.get_quantity() - responder.get_amount(bid)
     if k < 1 : return 1.00 # If responder has at least the quantity of dice of the bid then 100% chance of bid success.
     p = Constants.ACE_PROBABILITY if bid.is_ace_bid() else Constants.NOT_ACE_PROBABILITY
-    prob = 1 - binomial_cdf(k-1, n, p)
-    return prob
+    return binomial_cdf(k-1, n, p, lower_tail=False)
 
 def generate_players(player_names=None):
     """This function creates the Player objects that will be playing the Game."""
