@@ -1,7 +1,7 @@
 class Constants:
 
-    ACE_PROBABILITY = 1/3
-    NOT_ACE_PROBABILITY = 2/3
+    ACE_PROBABILITY = 1/6
+    NOT_ACE_PROBABILITY = 1/3
 
     quantity_words = dict(zip([i for i in range(0, 31)], ["Zero", "One", "Two", "Three", "Four", "Five", "Six",
                                                           "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve",
