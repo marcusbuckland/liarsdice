@@ -31,8 +31,7 @@ def get_probability(bid, n, responder):
     k = bid.get_quantity() - responder.get_amount(bid)
     if k < 1 : return 1.00 # If responder has at least the quantity of dice of the bid then 100% chance of bid success.
     p = Constants.ACE_PROBABILITY if bid.is_ace_bid() else Constants.NOT_ACE_PROBABILITY
-    prob = 1 - binomial_cdf(k, n, p)
-    prob += binomial_pmf(k, n, p) # Include probability of exactly k dice.
+    prob = 1 - binomial_cdf(k-1, n, p)
     return prob
 
 def generate_players(player_names=None):
