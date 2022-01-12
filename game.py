@@ -61,10 +61,15 @@ def get_response():
             continue
 
 
+def clear_text():
+    print("\n"*50) # output 100 blank lines.
+
+
 def faceoff(bidder, bid, responder, unknown_dice_quantity):
     """A face-off is effectively when a bid has been made, and it is time for the responder to play.
     They can respond with either a Bid of higher value, a Call, or ExactCall."""
-    print(f"\n\n\n\n\n\n{bidder.get_name()} has made a bid of: {bid}.")
+    clear_text()
+    print(f"{bidder.get_name()} has made a bid of: {bid}.")
     print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
     print(f"The expected value of {bid} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity):.2f}")
     print(f"The probability of this bid being successful is: {get_probability(bid, unknown_dice_quantity, responder):.4f}")
@@ -215,6 +220,7 @@ class Game:
 
     def resolve_call(self, call):
         """Check which player won the face-off after a Call response."""
+        clear_text()
         bidder = call.get_bidder()
         bid = call.get_bid()
         caller = call.get_caller()
