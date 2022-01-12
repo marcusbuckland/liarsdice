@@ -6,6 +6,34 @@ from call import Call
 from exactcall import ExactCall
 from constants import Constants
 
+def factorial(n):
+    """Returns the factorial of a number"""
+    if n == 0 or n == 1:
+        return 1
+    return n * factorial(n-1)
+
+def binomial_coefficient(n, k):
+    """Returns the number of combinations of choosing k from n"""
+    return factorial(n) / (factorial(n - k) * factorial(k))
+
+def binomial_pmf(k, n, p):
+    """Returns the probability mass function of the Binomial Distribution
+    P(X = k | n,p) where X ~ Bin(n, p)"""
+    return binomial_coefficient(n, k) * p**k * (1-p)**(n-k)
+
+def binomial_cdf(k, n, p):
+    """Returns the cumulative distribution function of the Binomial Distribution
+    P(X <= k | n,p) where X ~ Bin(n, p) """
+    return sum([binomial_pmf(i, n, p) for i in range(0, k+1)])
+
+def get_probability(bid, n, responder):
+    """Returns the probability of a Bid's success."""
+    k = bid.get_quantity() - responder.get_amount(bid)
+    if k < 1 : return 1.00 # If responder has at least the quantity of dice of the bid then 100% chance of bid success.
+    p = Constants.ACE_PROBABILITY if bid.is_ace_bid() else Constants.NOT_ACE_PROBABILITY
+    prob = 1 - binomial_cdf(k, n, p)
+    prob += binomial_pmf(k, n, p) # Include probability of exactly k dice.
+    return prob
 
 def generate_players(player_names=None):
     """This function creates the Player objects that will be playing the Game."""
@@ -39,7 +67,8 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity):
     They can respond with either a Bid of higher value, a Call, or ExactCall."""
     print(f"\n\n\n\n\n\n{bidder.get_name()} has made a bid of: {bid}.")
     print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
-    print(f"The expected value of {bid} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity)}")
+    print(f"The expected value of {bid} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity):.2f}")
+    print(f"The probability of this bid being successful is: {get_probability(bid, unknown_dice_quantity, responder):.4f}")
 
     response_string = get_response()
 
@@ -60,11 +89,10 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity):
 def get_expected_value(responder, bid, unknown_dice_quantity):
     """Returns the expected value of a bid value given a responder knows the quantity of that bid value
     for their own set of dice."""
-    dice_values = responder.get_dice_values()
-    expected = dice_values.count(1) if bid.is_ace_bid() else \
-        dice_values.count(1) + responder.get_dice_values().count(bid.get_value())
-    expected += unknown_dice_quantity / 6 if bid.is_ace_bid() else unknown_dice_quantity / 3
-    return round(expected,2)
+    expected = responder.get_amount(bid)
+    expected += unknown_dice_quantity * Constants.ACE_PROBABILITY if bid.is_ace_bid() \
+        else unknown_dice_quantity * Constants.NOT_ACE_PROBABILITY
+    return expected
 
 
 class Game:
@@ -174,13 +202,13 @@ class Game:
         responder = self.get_next_player()
 
         # response is either Bid, Call, or ExactCall object
-        unknown_dice_quantity = self.get_dice_remaining_amount() - len(responder.get_dice())
+        unknown_dice_quantity = self.get_unknown_dice_quantity(responder)
         response = faceoff(bidder, bid, responder, unknown_dice_quantity)
 
         # Repeatedly have face-offs until a Call or ExactCall response
         while isinstance(response, Bid):
             bidder, responder = responder, self.get_next_player()
-            unknown_dice_quantity = self.get_dice_remaining_amount() - len(responder.get_dice())
+            unknown_dice_quantity = self.get_unknown_dice_quantity(responder)
             response = faceoff(bidder, response, responder, unknown_dice_quantity)
 
         # Call or ExactCall response- resolve and end round.
@@ -279,3 +307,6 @@ class Game:
     def get_dice_remaining_amount(self):
         """Returns the quantity of dice that remain."""
         return len(self.get_all_dice_values())
+
+    def get_unknown_dice_quantity(self, player):
+        return self.get_dice_remaining_amount() - player.get_dice_quantity()
