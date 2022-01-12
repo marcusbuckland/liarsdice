@@ -17,18 +17,19 @@ def binomial_coefficient(n, k):
     return factorial(n) / (factorial(n - k) * factorial(k))
 
 def binomial_pmf(k, n, p):
-    """Returns the probability mass function of the Binomial Distribution"""
+    """Returns the probability mass function of the Binomial Distribution
+    P(X = k | n,p) where X ~ Bin(n, p)"""
     return binomial_coefficient(n, k) * p**k * (1-p)**(n-k)
 
 def binomial_cdf(k, n, p):
-    """Returns the cumulative distribution function of the Binomial Distribution"""
+    """Returns the cumulative distribution function of the Binomial Distribution
+    P(X <= k | n,p) where X ~ Bin(n, p) """
     return sum([binomial_pmf(i, n, p) for i in range(0, k+1)])
 
-def get_probability(bid, unknown_dice_quantity, responder):
+def get_probability(bid, n, responder):
     """Returns the probability of a Bid's success."""
     k = bid.get_quantity() - responder.get_amount(bid)
     if k < 1 : return 1.00 # If responder has at least the quantity of dice of the bid then 100% chance of bid success.
-    n = unknown_dice_quantity
     p = Constants.ACE_PROBABILITY if bid.is_ace_bid() else Constants.NOT_ACE_PROBABILITY
     prob = 1 - binomial_cdf(k, n, p)
     prob += binomial_pmf(k, n, p) # Include probability of exactly k dice.
@@ -201,13 +202,13 @@ class Game:
         responder = self.get_next_player()
 
         # response is either Bid, Call, or ExactCall object
-        unknown_dice_quantity = self.get_dice_remaining_amount() - len(responder.get_dice())
+        unknown_dice_quantity = self.get_unknown_dice_quantity(responder)
         response = faceoff(bidder, bid, responder, unknown_dice_quantity)
 
         # Repeatedly have face-offs until a Call or ExactCall response
         while isinstance(response, Bid):
             bidder, responder = responder, self.get_next_player()
-            unknown_dice_quantity = self.get_dice_remaining_amount() - len(responder.get_dice())
+            unknown_dice_quantity = self.get_unknown_dice_quantity(responder)
             response = faceoff(bidder, response, responder, unknown_dice_quantity)
 
         # Call or ExactCall response- resolve and end round.
@@ -306,3 +307,6 @@ class Game:
     def get_dice_remaining_amount(self):
         """Returns the quantity of dice that remain."""
         return len(self.get_all_dice_values())
+
+    def get_unknown_dice_quantity(self, player):
+        return self.get_dice_remaining_amount() - player.get_dice_quantity()
