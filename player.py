@@ -39,6 +39,7 @@ class Player:
         self.dice.pop()
 
     def gain_die(self):
+        self.has_gained_die = True
         self.dice.append(Die())
 
     def bid(self, previous_bid=None, quantity=None):
