@@ -136,8 +136,11 @@ class Game:
             print(p)
         print("")
         counts = Counter(self.get_all_dice_values())
-        for i in range(1,7):
-            print(f"{Constants.dice_words[i]}: {counts[i]}")
+        for i in range(1, 7):
+            if i == 1:
+                print(f"{Constants.dice_words[i]}: {counts[i]}")
+            else:
+                print(f"{Constants.dice_words[i]}: {counts[1]+counts[i]} ({counts[i]})")
         print("")
 
 
