@@ -53,7 +53,7 @@ def get_response():
     """This function returns a response string of 'Bid', 'Call', or 'ExactCall'.
     It is used to get a Player's response after a bid has been made."""
     while True:
-        response_string = input("How do you respond? (can be 'Bid', Call', or 'ExactCall'): ")
+        response_string = input("How do you respond? (can be 'Bid', Call', or 'ExactCall'): ").lower()
         if response_string in Constants.valid_responses:
             return response_string
         elif response_string.isnumeric():
@@ -79,7 +79,7 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity):
     response_string = get_response()
 
     # Bid response with String
-    if response_string == "Bid":
+    if response_string in Constants.bid_responses:
         response_bid = responder.bid(previous_bid=bid)
         return response_bid
 
@@ -90,16 +90,18 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity):
         return response_bid
 
     # Call response
-    if response_string == "Call":
+    if response_string in Constants.call_responses:
         return Call(bidder=bidder, bid=bid, caller=responder)
 
     # ExactCall response
-    if response_string == "ExactCall":
+    if response_string in Constants.exactcall_responses:
         return ExactCall(bidder=bidder, bid=bid, caller=responder)
 
     # Quit response
-    if response_string == "Quit":
+    if response_string in Constants.quit_responses:
         exit()
+
+    # Shouldn't reach here..
 
 
 def get_expected_value(responder, bid, unknown_dice_quantity):
