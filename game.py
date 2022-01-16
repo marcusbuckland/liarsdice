@@ -21,19 +21,18 @@ def binomial_pmf(k, n, p):
     P(X = k | n,p) where X ~ Bin(n, p)"""
     return binomial_coefficient(n, k) * p**k * (1-p)**(n-k)
 
-def binomial_cdf(k, n, p):
+def binomial_cdf(k, n, p, lower_tail=True):
     """Returns the cumulative distribution function of the Binomial Distribution
     P(X <= k | n,p) where X ~ Bin(n, p) """
-    return sum([binomial_pmf(i, n, p) for i in range(0, k+1)])
+    prob = sum([binomial_pmf(i, n, p) for i in range(0, k+1)])
+    return prob if lower_tail else (1-prob)
 
 def get_probability(bid, n, responder):
     """Returns the probability of a Bid's success."""
     k = bid.get_quantity() - responder.get_amount(bid)
     if k < 1 : return 1.00 # If responder has at least the quantity of dice of the bid then 100% chance of bid success.
     p = Constants.ACE_PROBABILITY if bid.is_ace_bid() else Constants.NOT_ACE_PROBABILITY
-    prob = 1 - binomial_cdf(k, n, p)
-    prob += binomial_pmf(k, n, p) # Include probability of exactly k dice.
-    return prob
+    return binomial_cdf(k-1, n, p, lower_tail=False)
 
 def generate_players(player_names=None):
     """This function creates the Player objects that will be playing the Game."""
@@ -62,10 +61,15 @@ def get_response():
             continue
 
 
+def clear_text():
+    print("\n"*25) # output 25 blank lines.
+
+
 def faceoff(bidder, bid, responder, unknown_dice_quantity):
     """A face-off is effectively when a bid has been made, and it is time for the responder to play.
     They can respond with either a Bid of higher value, a Call, or ExactCall."""
-    print(f"\n\n\n\n\n\n{bidder.get_name()} has made a bid of: {bid}.")
+    clear_text()
+    print(f"{bidder.get_name()} has made a bid of: {bid}.")
     print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
     print(f"The expected value of {bid} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity):.2f}")
     print(f"The probability of this bid being successful is: {get_probability(bid, unknown_dice_quantity, responder):.4f}")
@@ -216,6 +220,7 @@ class Game:
 
     def resolve_call(self, call):
         """Check which player won the face-off after a Call response."""
+        clear_text()
         bidder = call.get_bidder()
         bid = call.get_bid()
         caller = call.get_caller()
