@@ -5,6 +5,7 @@ from player import Player
 from call import Call
 from exactcall import ExactCall
 from constants import Constants
+from collections import Counter
 
 def factorial(n):
     """Returns the factorial of a number"""
@@ -133,6 +134,12 @@ class Game:
     def print_state(self):
         for p in self.players:
             print(p)
+        print("")
+        counts = Counter(self.get_all_dice_values())
+        for i in range(1,7):
+            print(f"{Constants.dice_words[i]}: {counts[i]}")
+        print("")
+
 
     def get_player_order(self):
         """Each player rolls a die to determine the order of play- The Highest roll starts first.
@@ -213,6 +220,9 @@ class Game:
         """Plays a single round of Liar's Dice"""
         self.all_players_roll_dice()
 
+        if self.god_mode:
+            self.print_state()
+
         bidder = self.first_to_act
         print(f"{bidder.get_name()} must make a bid!")
         print(f"{bidder.get_name()} you rolled: {bidder.get_dice()}")
@@ -239,7 +249,6 @@ class Game:
 
     def resolve_call(self, call):
         """Check which player won the face-off after a Call response."""
-        clear_text()
         bidder = call.get_bidder()
         bid = call.get_bid()
         caller = call.get_caller()
