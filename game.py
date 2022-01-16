@@ -50,8 +50,8 @@ def generate_players(player_names=None):
 
 
 def get_response():
-    """This function returns a response string of 'Bid', 'Call', or 'ExactCall'.
-    It is used to get a Player's response after a bid has been made."""
+    """This function returns a String that must be present in Constants.valid_responses.
+    It is used to get a Player's response to a bid."""
     while True:
         response_string = input("How do you respond? (can be 'Bid', Call', or 'ExactCall'): ").lower()
         if response_string in Constants.valid_responses:
