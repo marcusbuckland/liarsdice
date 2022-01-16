@@ -56,6 +56,8 @@ def get_response():
         response_string = input("How do you respond? (can be 'Bid', Call', or 'ExactCall'): ")
         if response_string in Constants.valid_responses:
             return response_string
+        elif response_string.isnumeric():
+            return response_string
         else:
             print(f"{response_string} is not a valid response!")
             continue
@@ -76,9 +78,15 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity):
 
     response_string = get_response()
 
-    # Bid response
+    # Bid response with String
     if response_string == "Bid":
         response_bid = responder.bid(previous_bid=bid)
+        return response_bid
+
+    # Bid response with numeric
+    if response_string.isnumeric():
+        quantity = int(response_string)
+        response_bid = responder.bid(previous_bid=bid, quantity=quantity)
         return response_bid
 
     # Call response

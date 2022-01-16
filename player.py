@@ -34,11 +34,12 @@ class Player:
     def gain_die(self):
         self.dice.append(Die())
 
-    def bid(self, previous_bid=None):
+    def bid(self, previous_bid=None, quantity=None):
         # Maybe a try/except to stop erroneous bids (e.g. someone bid's a string etc)        
 
         # Create bid
-        quantity = int(input("Bid quantity: "))
+        if quantity is None:
+            quantity = int(input("Bid quantity: "))
         value = int(input("Bid value: "))
         bid = Bid(quantity, value)
 
