@@ -62,7 +62,7 @@ def get_response():
 
 
 def clear_text():
-    print("\n"*50) # output 100 blank lines.
+    print("\n"*25) # output 25 blank lines.
 
 
 def faceoff(bidder, bid, responder, unknown_dice_quantity):
