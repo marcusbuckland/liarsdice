@@ -48,7 +48,6 @@ def generate_players(player_names=None):
             players.append(Player(name))
     return players
 
-
 def get_response():
     """This function returns a String that must be present in Constants.valid_responses or numeric.
     It is used to get a Player's response to a bid."""
@@ -62,10 +61,8 @@ def get_response():
             print(f"{response_string} is not a valid response!")
             continue
 
-
 def clear_text():
     print("\n"*25) # output 25 blank lines.
-
 
 def faceoff(bidder, bid, responder, unknown_dice_quantity):
     """A face-off is effectively when a bid has been made, and it is time for the responder to play.
@@ -117,17 +114,25 @@ class Game:
     """ Represents an actual instance of the game Liar's Dice (Dudo).
     https://en.wikipedia.org/wiki/Dudo"""
 
-    def __init__(self, player_names=None):
+    def __init__(self, player_names=None, god_mode=False):
         self.players = generate_players(player_names)
         self.get_player_order()
         self.player_cycle = cycle(self.players)
         self.first_to_act = self.get_next_player()
+        self.god_mode = god_mode
 
     def __repr__(self):
         return_str = ""
         for player in self.players:
             return_str += str(player) + "\n"
         return return_str
+
+    def is_god_mode(self):
+        return self.god_mode
+
+    def print_state(self):
+        for p in self.players:
+            print(p)
 
     def get_player_order(self):
         """Each player rolls a die to determine the order of play- The Highest roll starts first.
@@ -264,9 +269,15 @@ class Game:
                 print(f"There was exactly one {Constants.singular_dice_words[bid.get_value()]} in that round.")
             if quantity == bid_quantity:
                 # caller won the ExactCall
-                print(f"{caller.get_name()} won their ExactCall and gains a die!")
+                print(f"{caller.get_name()} won their ExactCall bid!")
+
+                # players are only eligible to gain a die back once per game.
+                if caller.hasnt_gained_die():
+                    print(f"{caller.get_name()} gains a die.")
+                    caller.gain_die()
+                else:
+                    print(f"{caller.get_name()} was ineligible to gain a die.")
                 print(f"{bidder.get_name()} loses a die.\n")
-                caller.gain_die()
                 bidder.lose_die()
                 self.first_to_act = bidder
             else:
