@@ -97,6 +97,10 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity):
     if response_string == "ExactCall":
         return ExactCall(bidder=bidder, bid=bid, caller=responder)
 
+    # Quit response
+    if response_string == "Quit":
+        exit()
+
 
 def get_expected_value(responder, bid, unknown_dice_quantity):
     """Returns the expected value of a bid value given a responder knows the quantity of that bid value

@@ -11,4 +11,4 @@ class Constants:
                                                           "Twenty-seven", "Twenty-eight", "Twenty-nine", "Thirty"]))
     dice_words = dict(zip([i for i in range(1, 7)], ["ones", "twos", "threes", "fours", "fives", "sixes"]))
     singular_dice_words = dict(zip([i for i in range(1, 7)], ["one", "two", "three", "four", "five", "six"]))
-    valid_responses = ["Bid", "Call", "ExactCall"]
+    valid_responses = ["Bid", "Call", "ExactCall", "Quit"]
