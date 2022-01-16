@@ -8,10 +8,11 @@ class Player:
     def __init__(self, name):
         self.name = name
         self.dice = [Die() for _ in range(5)]
+        self.has_gained_die = False
 
     def __repr__(self):
         return_string = ""
-        return_string += self.name + " "
+        return_string += self.name + ": "
         return_string += str([d.value for d in self.dice])
         return return_string
 
@@ -20,6 +21,12 @@ class Player:
 
     def get_dice(self):
         return self.dice
+
+    def has_gained_die(self):
+        return self.has_gained_die
+
+    def hasnt_gained_die(self):
+        return not self.has_gained_die
 
     def get_dice_values(self):
         return [d.value for d in self.dice]
