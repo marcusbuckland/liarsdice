@@ -9,7 +9,7 @@ class Bid:
         self.value = value  # {1, 2, 3, 4, 5, 6}
 
     def __repr__(self):
-        return str(f"{Constants.quantity_words[self.quantity]} {Constants.dice_words[self.value]}")
+        return str(f"{Constants.QUANTITY_WORDS[self.quantity]} {Constants.DICE_WORDS_PLURAL[self.value]}")
 
     def __eq__(self, other):
         return self.quantity == other.quantity and self.value == other.value
