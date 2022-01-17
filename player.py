@@ -7,7 +7,7 @@ def is_valid_value(value):
     :param value: value of dice to be checked
     :return: True if the value is a valid dice value, False otherwise.
     """
-    return value in Constants.valid_bid_values
+    return value in Constants.VALID_BID_VALUES
 
 class Player:
     """ Represents a player in the game."""
@@ -99,4 +99,3 @@ class Player:
 
     def get_dice_quantity(self):
         return len(self.dice)
-
