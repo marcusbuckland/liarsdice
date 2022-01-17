@@ -1,5 +1,6 @@
 class Constants:
 
+    ACE_VALUE = 1
     ACE_PROBABILITY = 1/6 # The probability of rolling a 1 on a 6 sided die.
     NOT_ACE_PROBABILITY = 1/3 # The probability of rolling {2, 3, 4, 5, 6} on a 6 sided die when 1's are wild.
 
