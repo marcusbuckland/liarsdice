@@ -3,21 +3,25 @@ from bid import Bid
 from constants import Constants
 
 def is_valid_value(value):
+    """
+    :param value: value of dice to be checked
+    :return: True if the value is a valid dice value, False otherwise.
+    """
     return value in Constants.valid_bid_values
 
 class Player:
     """ Represents a player in the game."""
 
-    def __init__(self, name):
+    def __init__(self, name, dice=None, has_gained_die=None, has_been_blind=None):
         self.name = name
-        self.dice = [Die() for _ in range(5)]
-        self.has_gained_die = False
-        self.has_been_blind = False
+        self.dice = [Die() for _ in range(Constants.DICE_START_AMOUNT)] if dice is None else dice
+        self.has_gained_die = False if has_gained_die is None else has_gained_die
+        self.has_been_blind = False if has_been_blind is None else has_been_blind
 
     def __repr__(self):
         return_string = ""
         return_string += self.name + ": "
-        return_string += str([d.value for d in self.dice])
+        return_string += str([self.get_dice_values()])
         return return_string
 
     def get_name(self):
@@ -53,7 +57,12 @@ class Player:
         self.dice.append(Die())
 
     def bid(self, previous_bid=None, quantity=None, value=None):
-        # TODO better error handling of bids.
+        """
+        :param previous_bid:
+        :param quantity:
+        :param value:
+        :return:
+        """
         if quantity is None:
             quantity = int(input("Bid quantity: "))
 
