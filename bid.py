@@ -6,7 +6,7 @@ class Bid:
 
     def __init__(self, quantity, value):
         self.quantity = quantity  # {1 -> n} where n is number of dice in play
-        self.value = value  # {1, 2, 3, 4, 5}
+        self.value = value  # {1, 2, 3, 4, 5, 6}
 
     def __repr__(self):
         return str(f"{Constants.quantity_words[self.quantity]} {Constants.dice_words[self.value]}")
