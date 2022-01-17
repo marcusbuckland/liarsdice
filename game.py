@@ -365,4 +365,5 @@ class Game:
         return len(self.get_all_dice_values())
 
     def get_unknown_dice_quantity(self, player):
+        """Returns the quantity of dice held by players other than 'player'."""
         return self.get_dice_remaining_amount() - player.get_dice_quantity()
