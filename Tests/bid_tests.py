@@ -4,7 +4,7 @@ from bid import Bid
 from constants import Constants
 
 
-class MyTestCase(unittest.TestCase):
+class BidTests(unittest.TestCase):
     def test_bid_gt(self):
         # Test bid quantity
         big = Bid(math.inf, 6)

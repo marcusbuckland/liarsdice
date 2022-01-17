@@ -3,7 +3,7 @@ import unittest
 from player import is_valid_value
 
 
-class PlayerTestCase(unittest.TestCase):
+class PlayerTests(unittest.TestCase):
     def test_erroneous_bid_values(self):
         bid_value = 7
         self.assertFalse(is_valid_value(bid_value))
