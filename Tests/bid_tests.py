@@ -47,15 +47,86 @@ class BidTests(unittest.TestCase):
         self.assertGreater(big, small)
 
         # Test ace bid is larger
-        big = Bid(3, Constants.ACE_VALUE) # Ace
+        big = Bid(2, Constants.ACE_VALUE)
+        small = Bid(1, Constants.ACE_VALUE)
+        self.assertGreater(big, small)
+
+        # Test ace bid is larger
+        big = Bid(3, Constants.ACE_VALUE)
         small = Bid(5, 2)
         self.assertGreater(big, small)
 
-    def test_bid_lt(self):
-        # Test quantity.
-        small = Bid(-math.inf, 6)
-        big = Bid(math.inf, 6)
+        big = Bid(5, Constants.ACE_VALUE)
+        small = Bid(10, 5)
         self.assertGreater(big, small)
+
+    def test_bid_lt(self):
+        # Test quantity
+        small = Bid(-math.inf, math.inf)
+        big = Bid(math.inf, math.inf)
+        self.assertLess(small, big)
+
+        # Test quantity
+        small = Bid(-math.inf, -math.inf)
+        big = Bid(math.inf, -math.inf)
+        self.assertLess(small, big)
+
+        # Test quantity
+        small = Bid(1, 2)
+        big = Bid(2, 2)
+        self.assertLess(small, big)
+
+        # Test bid value
+        small = Bid(math.inf, -math.inf)
+        big = Bid(math.inf, math.inf)
+        self.assertLess(small, big)
+
+        # Test bid value
+        small = Bid(-math.inf, -math.inf)
+        big = Bid(-math.inf, math.inf)
+        self.assertLess(small, big)
+
+        # Test bid value
+        small = Bid(20, 2)
+        big = Bid(20, 3)
+        self.assertLess(small, big)
+
+        # Test bid value
+        small = Bid(10, 2)
+        big = Bid(10, 6)
+        self.assertLess(small, big)
+
+        # Test ace bid is smaller
+        small = Bid(2, Constants.ACE_VALUE)
+        big = Bid(5, 2)
+        self.assertLess(small, big)
+
+        # Test ace bid is smaller
+        small = Bid(1, Constants.ACE_VALUE)
+        big = Bid(3, 6)
+        self.assertLess(small, big)
+
+        # Test ace bid is smaller
+        small = Bid(1, Constants.ACE_VALUE)
+        big = Bid(2, Constants.ACE_VALUE)
+        self.assertLess(small, big)
+
+        # Test Non-Ace < Ace
+        small = Bid(10, 6)
+        big = Bid(10, Constants.ACE_VALUE)
+        self.assertLess(small, big)
+
+        # Test Non-Ace < Ace
+        small = Bid(10, 6)
+        big = Bid(5, 1)
+        self.assertLess(small, big)
+
+
+
+
+
+
+
 
 
 
