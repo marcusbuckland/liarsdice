@@ -36,7 +36,7 @@ class Bid:
         if self.is_ace_bid() and other.not_ace_bid():
             return self.quantity * 2 <= other.quantity
         if self.not_ace_bid() and other.is_ace_bid():
-            return self.quantity < other.quantity * 2
+            return self.quantity <= other.quantity * 2
         if self.is_ace_bid() and other.is_ace_bid():
             return self.quantity < other.quantity
 
