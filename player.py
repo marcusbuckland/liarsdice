@@ -21,7 +21,7 @@ class Player:
     def __repr__(self):
         return_string = ""
         return_string += self.name + ": "
-        return_string += str([self.get_dice_values()])
+        return_string += str(self.get_dice_values())
         return return_string
 
     def get_name(self):
