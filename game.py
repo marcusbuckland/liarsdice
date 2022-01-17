@@ -78,6 +78,7 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round):
         print(
             f"The probability of this bid being successful is: {get_probability(bid, unknown_dice_quantity, responder):.4f}")
     else:
+        #TODO cannot look at their dice makes the player who kicked off the blind round also not be able to look at theirs when they should be able to.
         print(f"{responder.get_name()} cannot look at their dice. This round is blind!")
 
 

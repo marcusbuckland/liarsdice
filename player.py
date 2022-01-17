@@ -50,8 +50,7 @@ class Player:
         self.dice.append(Die())
 
     def bid(self, previous_bid=None, quantity=None):
-        # Maybe a try/except to stop erroneous bids (e.g. someone bid's a string etc)        
-
+        # TODO better error handling of bids.
         # Create bid
         if quantity is None:
             quantity = int(input("Bid quantity: "))
