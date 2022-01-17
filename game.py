@@ -55,7 +55,7 @@ def get_response():
     It is used to get a Player's response to a bid."""
     while True:
         response_string = input("How do you respond? (can be 'Bid', Call', or 'ExactCall'): ").lower()
-        if response_string in Constants.valid_responses:
+        if response_string in Constants.VALID_RESPONSES:
             return response_string
         elif response_string.isnumeric():
             return response_string
@@ -85,7 +85,7 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round):
     response_string = get_response()
 
     # Bid response with String
-    if response_string in Constants.bid_responses:
+    if response_string in Constants.BID_RESPONSES:
         response_bid = responder.bid(previous_bid=bid)
         return response_bid
 
@@ -96,15 +96,15 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round):
         return response_bid
 
     # Call response
-    if response_string in Constants.call_responses:
+    if response_string in Constants.CALL_RESPONSES:
         return Call(bidder=bidder, bid=bid, caller=responder)
 
     # ExactCall response
-    if response_string in Constants.exactcall_responses:
+    if response_string in Constants.EXACTCALL_RESPONSES:
         return ExactCall(bidder=bidder, bid=bid, caller=responder)
 
     # Quit response
-    if response_string in Constants.quit_responses:
+    if response_string in Constants.QUIT_RESPONSES:
         exit()
 
     # Shouldn't reach here..
@@ -146,9 +146,9 @@ class Game:
         counts = Counter(self.get_all_dice_values())
         for i in range(1, 7):
             if i == 1:
-                print(f"{Constants.dice_words[i]}: {counts[i]}")
+                print(f"{Constants.DICE_WORDS_PLURAL[i]}: {counts[i]}")
             else:
-                print(f"{Constants.dice_words[i]}: {counts[1]+counts[i]} ({counts[i]})")
+                print(f"{Constants.DICE_WORDS_PLURAL[i]}: {counts[1] + counts[i]} ({counts[i]})")
         print("")
 
 
@@ -281,19 +281,19 @@ class Game:
 
         for player in self.get_remaining_players():
             print(player)
-            bid_value = Constants.dice_words[bid.get_value()] if player.get_amount(bid) != 1 \
-                else Constants.singular_dice_words[bid.get_value()]
-            amount = Constants.quantity_words[player.get_amount(bid)].lower()
+            bid_value = Constants.DICE_WORDS_PLURAL[bid.get_value()] if player.get_amount(bid) != 1 \
+                else Constants.DICE_WORDS_SINGULAR[bid.get_value()]
+            amount = Constants.QUANTITY_WORDS[player.get_amount(bid)].lower()
             print(f"{player.get_name()} has {amount} {bid_value}\n")
 
         quantity = self.get_quantity(bid)
-        quantity_str = Constants.quantity_words[quantity]
+        quantity_str = Constants.QUANTITY_WORDS[quantity]
 
         if isinstance(call, ExactCall):
             if quantity != 1:
-                print(f"There were exactly {quantity_str.lower()} {Constants.dice_words[bid.get_value()]} in that round.")
+                print(f"There were exactly {quantity_str.lower()} {Constants.DICE_WORDS_PLURAL[bid.get_value()]} in that round.")
             else:
-                print(f"There was exactly one {Constants.singular_dice_words[bid.get_value()]} in that round.")
+                print(f"There was exactly one {Constants.DICE_WORDS_SINGULAR[bid.get_value()]} in that round.")
             if quantity == bid_quantity:
                 # caller won the ExactCall
                 print(f"{caller.get_name()} won their ExactCall bid!")
@@ -320,10 +320,10 @@ class Game:
                     self.first_to_act = self.get_next_player()
         else:
             if quantity != 1:
-                print(f"There were {quantity_str.lower()} {Constants.dice_words[bid.get_value()]} in that round.")
+                print(f"There were {quantity_str.lower()} {Constants.DICE_WORDS_PLURAL[bid.get_value()]} in that round.")
             else:
                 print(
-                    f"There was {quantity_str.lower()} {Constants.singular_dice_words[bid.get_value()]} in that round.")
+                    f"There was {quantity_str.lower()} {Constants.DICE_WORDS_SINGULAR[bid.get_value()]} in that round.")
 
             # response is just a regular Call
             if quantity >= bid_quantity:
