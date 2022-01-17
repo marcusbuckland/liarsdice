@@ -23,6 +23,7 @@ class Constants:
     call_responses = ["call", "c"]
     exactcall_responses = ["exactcall", "e"]
     quit_responses = ["quit", "q"]
+    valid_bid_values = [i for i in range(1,7)]
 
     game_title = """
   _____     _____       _       _______     ______    ______   _____   ______  ________  
