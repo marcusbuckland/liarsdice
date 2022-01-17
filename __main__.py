@@ -2,7 +2,7 @@ from game import Game
 from constants import Constants
 
 if __name__ == '__main__':
-    print(Constants.game_title)
+    print(Constants.GAME_TITLE)
     game = Game(player_names=['Marcus','Bede', 'Steph', 'Kim',], god_mode=True)
     round_counter = 1
     while game.not_finished():
