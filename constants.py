@@ -1,7 +1,7 @@
 class Constants:
 
     ACE_PROBABILITY = 1/6 # The probability of rolling a 1 on a 6 sided die.
-    NOT_ACE_PROBABILITY = 1/3 # The probability of rolling 2-5 on a 6 sided die when 1's are wild.
+    NOT_ACE_PROBABILITY = 1/3 # The probability of rolling {2, 3, 4, 5, 6} on a 6 sided die when 1's are wild.
 
     quantity_words = dict(zip([i for i in range(0, 51)], ["Zero", "One", "Two", "Three", "Four", "Five", "Six",
                                                           "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve",
