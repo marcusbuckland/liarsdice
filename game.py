@@ -32,6 +32,7 @@ def get_probability(bid, n, responder):
     """Returns the probability of a Bid's success."""
     k = bid.get_quantity() - responder.get_amount(bid)
     if k < 1 : return 1.00 # If responder has at least the quantity of dice of the bid then 100% chance of bid success.
+    if k > n : return 0.00 # If k is larger than n, something has gone very wrong...
     p = Constants.ACE_PROBABILITY if bid.is_ace_bid() else Constants.NOT_ACE_PROBABILITY
     return binomial_cdf(k-1, n, p, lower_tail=False)
 
