@@ -1,6 +1,9 @@
 from die import Die
 from bid import Bid
+from constants import Constants
 
+def is_valid_value(value):
+    return value in Constants.valid_bid_values
 
 class Player:
     """ Represents a player in the game."""
@@ -49,12 +52,18 @@ class Player:
         self.has_gained_die = True
         self.dice.append(Die())
 
-    def bid(self, previous_bid=None, quantity=None):
+    def bid(self, previous_bid=None, quantity=None, value=None):
         # TODO better error handling of bids.
-        # Create bid
         if quantity is None:
             quantity = int(input("Bid quantity: "))
-        value = int(input("Bid value: "))
+
+        while value is None:
+            value = int(input("Bid value: "))
+            if not is_valid_value(value):
+                print("Input a valid value: can be one of {1, 2, 3, 4, 5, 6}")
+                value = None
+
+        # Create bid
         bid = Bid(quantity, value)
 
         # Beginning of a bidding round, no previous bid
