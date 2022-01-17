@@ -9,6 +9,7 @@ class Player:
         self.name = name
         self.dice = [Die() for _ in range(5)]
         self.has_gained_die = False
+        self.has_been_blind = False
 
     def __repr__(self):
         return_string = ""
@@ -27,6 +28,12 @@ class Player:
 
     def hasnt_gained_die(self):
         return not self.has_gained_die
+
+    def has_been_blind(self):
+        return self.has_been_blind
+
+    def hasnt_been_blind(self):
+        return not self.has_been_blind
 
     def get_dice_values(self):
         return [d.value for d in self.dice]

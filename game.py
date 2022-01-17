@@ -65,14 +65,20 @@ def get_response():
 def clear_text():
     print("\n"*25) # output 25 blank lines.
 
-def faceoff(bidder, bid, responder, unknown_dice_quantity):
+def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round):
     """A face-off is effectively when a bid has been made, and it is time for the responder to play.
     They can respond with either a Bid of higher value, a Call, or ExactCall."""
     clear_text()
     print(f"{bidder.get_name()} has made a bid of: {bid}.")
-    print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
-    print(f"The expected value of {bid} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity):.2f}")
-    print(f"The probability of this bid being successful is: {get_probability(bid, unknown_dice_quantity, responder):.4f}")
+    if not blind_round:
+        print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
+        print(
+            f"The expected value of {bid} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity):.2f}")
+        print(
+            f"The probability of this bid being successful is: {get_probability(bid, unknown_dice_quantity, responder):.4f}")
+    else:
+        print(f"{responder.get_name()} cannot look at their dice. This round is blind!")
+
 
     response_string = get_response()
 
@@ -222,11 +228,18 @@ class Game:
     def play_round(self):
         """Plays a single round of Liar's Dice"""
         self.all_players_roll_dice()
+        blind_round = False
 
         if self.god_mode:
             self.print_state()
 
         bidder = self.first_to_act
+
+        # Check if it's a blind round
+        if len(bidder.get_dice()) == 1 and bidder.hasnt_been_blind():
+            bidder.has_been_blind = True
+            blind_round = True
+
         print(f"{bidder.get_name()} must make a bid!")
         print(f"{bidder.get_name()} you rolled: {bidder.get_dice()}")
         bid = bidder.bid()
@@ -239,13 +252,13 @@ class Game:
 
         # response is either Bid, Call, or ExactCall object
         unknown_dice_quantity = self.get_unknown_dice_quantity(responder)
-        response = faceoff(bidder, bid, responder, unknown_dice_quantity)
+        response = faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round)
 
         # Repeatedly have face-offs until a Call or ExactCall response
         while isinstance(response, Bid):
             bidder, responder = responder, self.get_next_player()
             unknown_dice_quantity = self.get_unknown_dice_quantity(responder)
-            response = faceoff(bidder, response, responder, unknown_dice_quantity)
+            response = faceoff(bidder, response, responder, unknown_dice_quantity, blind_round)
 
         # Call or ExactCall response- resolve and end round.
         self.resolve_call(response)
@@ -301,7 +314,7 @@ class Game:
                 if caller.is_remaining():
                     self.first_to_act = caller
                 else:
-                    print(f"{caller.get_name()} has no dice remaining!\n")
+                    print(f"{caller.get_name()} has no dice remaining and is eliminated from the game!\n")
                     self.first_to_act = self.get_next_player()
         else:
             if quantity != 1:
@@ -309,6 +322,7 @@ class Game:
             else:
                 print(
                     f"There was {quantity_str.lower()} {Constants.singular_dice_words[bid.get_value()]} in that round.")
+
             # response is just a regular Call
             if quantity >= bid_quantity:
                 # bidder won & caller lost.
@@ -319,7 +333,7 @@ class Game:
                 if caller.is_remaining():
                     self.first_to_act = caller
                 else:
-                    print(f"{caller.get_name()} has no dice remaining!\n")
+                    print(f"{caller.get_name()} has no dice remaining and is eliminated from the game!\n")
                     self.first_to_act = self.get_next_player()
             else:
                 # caller won & bidder lost.
@@ -330,7 +344,7 @@ class Game:
                 if bidder.is_remaining():
                     self.first_to_act = bidder
                 else:
-                    print(f"{bidder.get_name()} has no dice remaining!\n")
+                    print(f"{bidder.get_name()} has no dice remaining and is eliminated from the game!\n")
                     self.first_to_act = caller
 
     def get_all_dice_values(self):
