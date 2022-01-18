@@ -9,6 +9,9 @@ def is_valid_value(value):
     """
     return value in Constants.VALID_BID_VALUES
 
+def is_valid_quantity(quantity):
+    return quantity.isnumeric()
+
 class Player:
     """ Represents a player in the game."""
 
@@ -64,7 +67,12 @@ class Player:
         :return:
         """
         if quantity is None:
-            quantity = int(input("Bid quantity: "))
+            quantity = input("Bid quantity: ")
+            if not is_valid_quantity(quantity):
+                print("Input a valid quantity!")
+                quantity = None
+            else:
+                quantity = int(quantity)
 
         while value is None:
             value = int(input("Bid value: "))
