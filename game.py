@@ -124,6 +124,7 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bi
     # Help response
     if response_string in Constants.HELP_RESPONSES:
         print_help_screen()
+        input("Hit Enter key to continue..") # Pause execution of script until player has finished reading help screen.
         return faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bidder)
 
 
