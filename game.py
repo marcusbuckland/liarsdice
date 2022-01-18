@@ -64,11 +64,21 @@ def get_response():
             continue
 
 def clear_text():
-    print("\n"*25) # output 25 blank lines.
+    """Outputs 25 blank lines"""
+    print("\n"*25)
 
-def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round):
-    """A face-off is effectively when a bid has been made, and it is time for the responder to play.
-    They can respond with either a Bid of higher value, a Call, or ExactCall."""
+def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bidder):
+    """
+    A face-off occurs after bid has been made and must be responded to.
+    They can respond with either a Bid of higher value, a Call, or ExactCall.
+    :param bidder: The player that has made the current bid.
+    :param bid: The curent bid.
+    :param responder: The player that must respond to the current bid.
+    :param unknown_dice_quantity: The amount of dice remaining in the game, less the amount of dice in the responder's set.
+    :param blind_round: True if this round is a blind round, otherwise False.
+    :param blind_bidder: The player who started the blind round if it's a blind round, otherwise None.
+    :return:
+    """
     clear_text()
     print(f"{bidder.get_name()} has made a bid of: {bid}.")
     if not blind_round:
@@ -78,9 +88,10 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round):
         print(
             f"The probability of this bid being successful is: {get_probability(bid, unknown_dice_quantity, responder):.4f}")
     else:
-        #TODO cannot look at their dice makes the player who kicked off the blind round also not be able to look at theirs when they should be able to.
-        print(f"{responder.get_name()} cannot look at their dice. This round is blind!")
-
+        if responder is not blind_bidder:
+            print(f"{responder.get_name()} cannot look at their dice. This round is blind!")
+        else:
+            print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
 
     response_string = get_response()
 
@@ -231,6 +242,7 @@ class Game:
         """Plays a single round of Liar's Dice"""
         self.all_players_roll_dice()
         blind_round = False
+        blind_bidder = None
 
         if self.god_mode:
             self.print_state()
@@ -240,6 +252,7 @@ class Game:
         # Check if it's a blind round
         if len(bidder.get_dice()) == 1 and bidder.hasnt_been_blind():
             bidder.has_been_blind = True
+            blind_bidder = bidder
             blind_round = True
 
         print(f"{bidder.get_name()} must make a bid!")
@@ -254,13 +267,13 @@ class Game:
 
         # response is either Bid, Call, or ExactCall object
         unknown_dice_quantity = self.get_unknown_dice_quantity(responder)
-        response = faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round)
+        response = faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bidder)
 
         # Repeatedly have face-offs until a Call or ExactCall response
         while isinstance(response, Bid):
             bidder, responder = responder, self.get_next_player()
             unknown_dice_quantity = self.get_unknown_dice_quantity(responder)
-            response = faceoff(bidder, response, responder, unknown_dice_quantity, blind_round)
+            response = faceoff(bidder, response, responder, unknown_dice_quantity, blind_round, blind_bidder)
 
         # Call or ExactCall response- resolve and end round.
         self.resolve_call(response)
