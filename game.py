@@ -36,6 +36,11 @@ def get_probability(bid, n, responder):
     p = Constants.ACE_PROBABILITY if bid.is_ace_bid() else Constants.NOT_ACE_PROBABILITY
     return binomial_cdf(k-1, n, p, lower_tail=False)
 
+def print_help_screen():
+    print("This is the help screen lalalala")
+    print("This is still the help screen!!!")
+    print("Last line of the help-screen!")
+
 def generate_players(player_names=None):
     """This function creates the Player objects that will be playing the Game."""
     players = []
@@ -81,12 +86,13 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bi
     """
     clear_text()
     print(f"{bidder.get_name()} has made a bid of: {bid}.")
+    bidder_possessive = str(bidder.get_name() + "'s") if bidder.get_name()[-1] != 's' else str(bidder.get_name() + "'")
     if not blind_round:
         print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
         print(
-            f"The expected value of {bid} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity):.2f}")
+            f"The expected number of {Constants.DICE_WORDS_SINGULAR[bid.get_value()]} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity):.2f}")
         print(
-            f"The probability of this bid being successful is: {get_probability(bid, unknown_dice_quantity, responder):.4f}")
+            f"The probability of {bidder_possessive} bid being successful is: {get_probability(bid, unknown_dice_quantity, responder):.4f}")
     else:
         if responder is not blind_bidder:
             print(f"{responder.get_name()} cannot look at their dice. This round is blind!")
@@ -103,6 +109,7 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bi
     # Bid response with numeric
     if response_string.isnumeric():
         quantity = int(response_string)
+        print(f"{responder.get_name()} responds with a bid of quantity: {quantity}")
         response_bid = responder.bid(previous_bid=bid, quantity=quantity)
         return response_bid
 
@@ -113,6 +120,12 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bi
     # ExactCall response
     if response_string in Constants.EXACTCALL_RESPONSES:
         return ExactCall(bidder=bidder, bid=bid, caller=responder)
+
+    # Help response
+    if response_string in Constants.HELP_RESPONSES:
+        print_help_screen()
+        return faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bidder)
+
 
     # Quit response
     if response_string in Constants.QUIT_RESPONSES:
