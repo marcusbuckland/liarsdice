@@ -15,30 +15,10 @@ class Bid:
         return self.quantity == other.quantity and self.value == other.value
 
     def __gt__(self, other):
-        if self.not_ace_bid() and other.not_ace_bid():
-            if self.quantity == other.quantity:
-                return self.value > other.value
-            else:
-                return self.quantity > other.quantity
-        if self.is_ace_bid() and other.not_ace_bid():
-            return self.quantity * 2 >= other.quantity
-        if self.not_ace_bid() and other.is_ace_bid():
-            return self.quantity > other.quantity * 2
-        if self.is_ace_bid() and other.is_ace_bid():
-            return self.quantity > other.quantity
+        return self.get_equality_value() > other.get_equality_value()
 
     def __lt__(self, other):
-        if self.not_ace_bid() and other.not_ace_bid():
-            if self.quantity == other.quantity:
-                return self.value < other.value
-            else:
-                return self.quantity < other.quantity
-        if self.is_ace_bid() and other.not_ace_bid():
-            return self.quantity * 2 <= other.quantity
-        if self.not_ace_bid() and other.is_ace_bid():
-            return self.quantity <= other.quantity * 2
-        if self.is_ace_bid() and other.is_ace_bid():
-            return self.quantity < other.quantity
+        return self.get_equality_value() < other.get_equality_value()
 
     def get_quantity(self):
         return self.quantity
@@ -47,7 +27,13 @@ class Bid:
         return self.value
 
     def is_ace_bid(self):
-        return self.value == 1
+        return self.value == Constants.ACE_VALUE
 
     def not_ace_bid(self):
-        return self.value != 1
+        return self.value != Constants.ACE_VALUE
+
+    def get_equality_value(self):
+        if self.is_ace_bid():
+            return self.get_quantity() * 12 + 7
+        # Not an ace bid
+        return self.get_quantity() * 6 + self.get_value()
