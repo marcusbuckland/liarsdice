@@ -7,7 +7,9 @@ def is_valid_value(value):
     :param value: value of dice to be checked
     :return: True if the value is a valid dice value, False otherwise.
     """
-    return value in Constants.VALID_BID_VALUES
+    if value.isnumeric():
+        return int(value) in Constants.VALID_BID_VALUES
+    return False
 
 def is_valid_quantity(quantity):
     return quantity.isnumeric()
@@ -66,7 +68,7 @@ class Player:
         :param value:
         :return:
         """
-        if quantity is None:
+        while quantity is None:
             quantity = input("Bid quantity: ")
             if not is_valid_quantity(quantity):
                 print("Input a valid quantity!")
@@ -75,11 +77,12 @@ class Player:
                 quantity = int(quantity)
 
         while value is None:
-            value = int(input("Bid value: "))
+            value = input("Bid value: ")
             if not is_valid_value(value):
                 print("Input a valid value: can be one of {1, 2, 3, 4, 5, 6}")
                 value = None
-
+            else:
+                value = int(value)
         # Create bid
         bid = Bid(quantity, value)
 
