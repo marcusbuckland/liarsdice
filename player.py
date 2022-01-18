@@ -12,6 +12,10 @@ def is_valid_value(value):
     return False
 
 def is_valid_quantity(quantity):
+    """
+    :param quantity: quantity of the bid to be checked
+    :return: True if the quantity is a valid bid quantity, False otherwise.
+    """
     return quantity.isnumeric()
 
 class Player:
