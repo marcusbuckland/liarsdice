@@ -34,6 +34,6 @@ class Bid:
 
     def get_equality_value(self):
         if self.is_ace_bid():
-            return self.get_quantity() * 12 + 7
+            return self.get_quantity() * 12 + 1
         # Not an ace bid
-        return self.get_quantity() * 6 + self.get_value()
+        return (self.get_quantity() - 1) * 6 + self.get_value()
