@@ -4,31 +4,34 @@ from player import is_valid_value
 
 
 class PlayerTests(unittest.TestCase):
-    def test_erroneous_bids(self):
-        bid_value = 7
+    def test_invalid_bid_values(self):
+        bid_value = '7'
         self.assertFalse(is_valid_value(bid_value))
 
-        bid_value = -8
+        bid_value = '-1'
         self.assertFalse(is_valid_value(bid_value))
 
-        bid_value = math.pi
+        bid_value = '0'
         self.assertFalse(is_valid_value(bid_value))
 
-        bid_value = math.inf
+        bid_value = str(math.pi)
         self.assertFalse(is_valid_value(bid_value))
 
-        bid_value = -math.inf
+        bid_value = str(math.inf)
         self.assertFalse(is_valid_value(bid_value))
 
-        bid_value = math.tau
+        bid_value = str(-math.inf)
         self.assertFalse(is_valid_value(bid_value))
 
-        bid_value = math.inf ** math.inf
+        bid_value = str(math.tau)
+        self.assertFalse(is_valid_value(bid_value))
+
+        bid_value = str(math.inf ** math.inf)
         self.assertFalse(is_valid_value(bid_value))
 
     def test_valid_bid_values(self):
         for bid_value in range(1, 7):
-            self.assertTrue(is_valid_value(bid_value))
+            self.assertTrue(is_valid_value(str(bid_value)))
 
 
 
