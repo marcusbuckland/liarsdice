@@ -19,10 +19,11 @@ class Constants:
     DICE_WORDS_PLURAL = dict(zip([i for i in range(1, 7)], ["ones", "twos", "threes", "fours", "fives", "sixes"]))
     DICE_WORDS_SINGULAR = dict(zip([i for i in range(1, 7)], ["one", "two", "three", "four", "five", "six"]))
 
-    VALID_RESPONSES = {"bid", "b", "call", "c", "exactcall", "e", "quit", "q"}
+    VALID_RESPONSES = {"bid", "b", "call", "c", "exactcall", "e", "help", "h", "quit", "q"}
     BID_RESPONSES = {"bid", "b"}
     CALL_RESPONSES = {"call", "c"}
     EXACTCALL_RESPONSES = {"exactcall", "e"}
+    HELP_RESPONSES = {"help", "h"}
     QUIT_RESPONSES = {"quit", "q"}
     VALID_BID_VALUES = set(range(1, 7))
 
