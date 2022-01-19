@@ -37,21 +37,30 @@ def get_probability(bid, n, responder):
     return binomial_cdf(k-1, n, p, lower_tail=False)
 
 def get_player_name_possessive(player):
-    return str(player.get_name() + "'s") if player.get_name()[-1] != 's' else str(player.get_name() + "'")
+    """Returns the possessive form of a player's name."""
+    return str(player.get_name() + "'") if player.get_name().endswith('s') else str(player.get_name() + "'s")
 
 def print_help_screen():
+    #TODO actually make a proper help screen.
+    """Prints out a help screen for players showing the rules of the game."""
     print("This is the help screen lalalala")
     print("This is still the help screen!!!")
     print("Last line of the help-screen!")
 
 def generate_players(player_names=None):
-    """This function creates the Player objects that will be playing the Game."""
+    """This function creates the Player objects that will be playing the game."""
     players = []
+    num_players = None
     if player_names:
-        # Useful for creating games without user input (e.g tests).
         players = [Player(name) for name in player_names]
     else:
-        num_players = int(input("How many players are playing?"))
+        while num_players is None:
+            num_players = input("How many players are playing?")
+            if num_players.isnumeric():
+                num_players = int(num_players)
+            else:
+                print("The number of players must be a number!")
+                num_players = None
         # Create the Player objects and store them inside players list
         for _ in range(num_players):
             name = input("Player's name?")
@@ -75,7 +84,7 @@ def clear_text():
     """Outputs 25 blank lines"""
     print("\n"*25)
 
-def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bidder):
+def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round=False, blind_bidder=None):
     """
     A face-off occurs after bid has been made and must be responded to.
     They can respond with either a Bid of higher value, a Call, or ExactCall.
@@ -130,17 +139,21 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bi
         input("Hit Enter key to continue..") # Pause execution of script until player has finished reading help screen.
         return faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bidder)
 
-
     # Quit response
     if response_string in Constants.QUIT_RESPONSES:
         exit()
 
-    # Shouldn't reach here..
+    # Should never get here...
 
 
 def get_expected_value(responder, bid, unknown_dice_quantity):
-    """Returns the expected value of a bid value given a responder knows the quantity of that bid value
-    for their own set of dice."""
+    #TODO ensure expected value method works for blind rounds.
+    """
+    :param responder: The player responding to the bid.
+    :param bid: The current bid.
+    :param unknown_dice_quantity: The number of dice which values are unknown to the responder.
+    :return: The expected number of dice with the face value of the bid.
+    """
     expected = responder.get_amount(bid)
     expected += unknown_dice_quantity * Constants.ACE_PROBABILITY if bid.is_ace_bid() \
         else unknown_dice_quantity * Constants.NOT_ACE_PROBABILITY
@@ -165,18 +178,20 @@ class Game:
         return return_str
 
     def is_god_mode(self):
+        """Retruns True if god_mode is set to True, otherwise False."""
         return self.god_mode
 
     def print_state(self):
+        """Displays the current state of the game to the console."""
         for p in self.players:
             print(p)
         print("")
         counts = Counter(self.get_all_dice_values())
         for i in range(1, 7):
-            if i == 1:
+            if i == Constants.ACE_VALUE:
                 print(f"{Constants.DICE_WORDS_PLURAL[i]}: {counts[i]}")
             else:
-                print(f"{Constants.DICE_WORDS_PLURAL[i]}: {counts[1] + counts[i]} ({counts[i]})")
+                print(f"{Constants.DICE_WORDS_PLURAL[i]}: {counts[Constants.ACE_VALUE] + counts[i]} ({counts[i]})")
         print("")
 
 
@@ -283,6 +298,7 @@ class Game:
         responder = self.get_next_player()
 
         # response is either Bid, Call, or ExactCall object
+        #TODO fix unknown_dice_quantity for blind rounds.
         unknown_dice_quantity = self.get_unknown_dice_quantity(responder)
         response = faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bidder)
 

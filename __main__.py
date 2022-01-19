@@ -3,7 +3,7 @@ from constants import Constants
 
 if __name__ == '__main__':
     print(Constants.GAME_TITLE)
-    game = Game(player_names=['Marcus','Bede', 'Steph', 'Kim',], god_mode=True)
+    game = Game(player_names = ["Marcus", "Steph", "Bede", "Kim"], god_mode=True)
     round_counter = 1
     while game.not_finished():
         print("=============================")

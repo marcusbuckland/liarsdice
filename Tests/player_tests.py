@@ -94,7 +94,7 @@ class PlayerTests(unittest.TestCase):
         player = Player()
         for _ in range(Constants.DICE_START_AMOUNT):
             player.lose_die()
-        self.assertTrue(player.has_lost())
+        self.assertTrue(player.has_been_eliminated())
 
     def test_is_remaining(self):
         player = Player()
