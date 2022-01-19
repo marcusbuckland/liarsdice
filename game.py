@@ -28,13 +28,27 @@ def binomial_cdf(k, n, p, lower_tail=True):
     prob = sum([binomial_pmf(i, n, p) for i in range(0, k+1)])
     return prob if lower_tail else (1-prob)
 
-def get_probability(bid, n, responder):
+def get_probability(bid, n, responder, blind_round=False, blind_bidder=None):
     """Returns the probability of a Bid's success."""
+    if blind_round and blind_bidder is not responder:
+        k = bid.get_quantity()
     k = bid.get_quantity() - responder.get_amount(bid)
     if k < 1 : return 1.00 # If responder has at least the quantity of dice of the bid then 100% chance of bid success.
     if k > n : return 0.00 # If k is larger than n, something has gone very wrong...
     p = Constants.ACE_PROBABILITY if bid.is_ace_bid() else Constants.NOT_ACE_PROBABILITY
     return binomial_cdf(k-1, n, p, lower_tail=False)
+
+def display_probabilities(bidder, responder, bid, unknown_dice_quantity, blind_round=False, blind_bidder=None):
+    bidder_possessive = get_player_name_possessive(bidder)
+    print(
+        f"The expected number of {Constants.DICE_WORDS_SINGULAR[bid.get_value()]} given your set of dice is"
+        f" {get_expected_value(responder, bid, unknown_dice_quantity, blind_round, blind_bidder):.2f}")
+    print(
+        f"The probability of {bidder_possessive} bid being successful is: {get_probability(bid, unknown_dice_quantity, responder, blind_round, blind_bidder):.4f}")
+
+def display_dice(player):
+    print(f"{player.get_name()} you rolled: {player.get_dice()}")
+
 
 def get_player_name_possessive(player):
     """Returns the possessive form of a player's name."""
@@ -98,18 +112,16 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round=False, bl
     """
     clear_text()
     print(f"{bidder.get_name()} has made a bid of: {bid}.")
-    bidder_possessive = get_player_name_possessive(bidder)
     if not blind_round:
-        print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
-        print(
-            f"The expected number of {Constants.DICE_WORDS_SINGULAR[bid.get_value()]} given your set of dice is {get_expected_value(responder, bid, unknown_dice_quantity):.2f}")
-        print(
-            f"The probability of {bidder_possessive} bid being successful is: {get_probability(bid, unknown_dice_quantity, responder):.4f}")
+        display_dice(responder)
+        display_probabilities(bidder, responder, bid, unknown_dice_quantity)
     else:
         if responder is not blind_bidder:
             print(f"{responder.get_name()} cannot look at their dice. This round is blind!")
+            display_probabilities(bidder, responder, bid, unknown_dice_quantity, blind_round, blind_bidder)
         else:
-            print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
+            display_dice(responder)
+            display_probabilities(bidder, responder, bid, unknown_dice_quantity)
 
     response_string = get_response()
 
@@ -146,15 +158,14 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round=False, bl
     # Should never get here...
 
 
-def get_expected_value(responder, bid, unknown_dice_quantity):
-    #TODO ensure expected value method works for blind rounds.
+def get_expected_value(responder, bid, unknown_dice_quantity, blind_round, blind_bidder):
     """
     :param responder: The player responding to the bid.
     :param bid: The current bid.
     :param unknown_dice_quantity: The number of dice which values are unknown to the responder.
     :return: The expected number of dice with the face value of the bid.
     """
-    expected = responder.get_amount(bid)
+    expected = responder.get_amount(bid) if not blind_round and responder is blind_bidder else 0
     expected += unknown_dice_quantity * Constants.ACE_PROBABILITY if bid.is_ace_bid() \
         else unknown_dice_quantity * Constants.NOT_ACE_PROBABILITY
     return expected
@@ -298,14 +309,13 @@ class Game:
         responder = self.get_next_player()
 
         # response is either Bid, Call, or ExactCall object
-        #TODO fix unknown_dice_quantity for blind rounds.
-        unknown_dice_quantity = self.get_unknown_dice_quantity(responder)
+        unknown_dice_quantity = self.get_unknown_dice_quantity(responder, blind_round, blind_bidder)
         response = faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bidder)
 
         # Repeatedly have face-offs until a Call or ExactCall response
         while isinstance(response, Bid):
             bidder, responder = responder, self.get_next_player()
-            unknown_dice_quantity = self.get_unknown_dice_quantity(responder)
+            unknown_dice_quantity = self.get_unknown_dice_quantity(responder, blind_round, blind_bidder)
             response = faceoff(bidder, response, responder, unknown_dice_quantity, blind_round, blind_bidder)
 
         # Call or ExactCall response- resolve and end round.
@@ -411,6 +421,8 @@ class Game:
         """Returns the quantity of dice that remain."""
         return len(self.get_all_dice_values())
 
-    def get_unknown_dice_quantity(self, player):
+    def get_unknown_dice_quantity(self, player, blind_round, blind_bidder):
         """Returns the quantity of dice held by players other than 'player'."""
+        if blind_round and player is not blind_bidder:
+                return self.get_dice_remaining_amount()
         return self.get_dice_remaining_amount() - player.get_dice_quantity()
