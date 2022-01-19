@@ -113,6 +113,17 @@ class PlayerTests(unittest.TestCase):
         bid = Bid(4, 1)
         self.assertTrue(player.get_amount(bid) == 0)
 
+    def test_roll(self):
+        # TODO Re-write this test utilising a random seed.
+        player = Player()
+        original_dice = sorted(player.get_dice_values())
+        for _ in range(10):
+            player.roll()
+            rolled_dice = sorted(player.get_dice_values())
+            if original_dice != rolled_dice:
+                self.assertTrue(original_dice != rolled_dice)
+
+
 
 
 
