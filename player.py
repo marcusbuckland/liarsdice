@@ -21,11 +21,11 @@ def is_valid_quantity(quantity):
 class Player:
     """ Represents a player in the game."""
 
-    def __init__(self, name, dice=None, has_gained_die=None, has_been_blind=None):
+    def __init__(self, name="player", dice=None, has_gained_die=False, has_been_blind=False):
         self.name = name
         self.dice = [Die() for _ in range(Constants.DICE_START_AMOUNT)] if dice is None else dice
-        self.has_gained_die = False if has_gained_die is None else has_gained_die
-        self.has_been_blind = False if has_been_blind is None else has_been_blind
+        self.has_gained_die = has_gained_die
+        self.has_been_blind = has_been_blind
 
     def __repr__(self):
         return_string = ""
@@ -39,13 +39,13 @@ class Player:
     def get_dice(self):
         return self.dice
 
-    def has_gained_die(self):
+    def get_has_gained_die(self):
         return self.has_gained_die
 
     def hasnt_gained_die(self):
         return not self.has_gained_die
 
-    def has_been_blind(self):
+    def get_has_been_blind(self):
         return self.has_been_blind
 
     def hasnt_been_blind(self):
