@@ -71,7 +71,7 @@ class BidTests(unittest.TestCase):
     def test_repr(self):
         # Ace Bid
         bid = Bid(10, Constants.ACE_VALUE)
-        self.assertEquals(bid.__repr__(), "Ten ones")
+        self.assertEqual(bid.__repr__(), "Ten ones")
 
     def test_is_ace_bid_method(self):
         bid = Bid(10, Constants.ACE_VALUE)
