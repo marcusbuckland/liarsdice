@@ -1,4 +1,5 @@
 class Constants:
+    """Class to hold Constant values used in the game."""
 
     ACE_VALUE = 1
     ACE_PROBABILITY = 1/6 # The probability of rolling a 1 on a 6 sided die.
