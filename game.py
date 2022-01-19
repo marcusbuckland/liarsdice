@@ -36,6 +36,9 @@ def get_probability(bid, n, responder):
     p = Constants.ACE_PROBABILITY if bid.is_ace_bid() else Constants.NOT_ACE_PROBABILITY
     return binomial_cdf(k-1, n, p, lower_tail=False)
 
+def get_player_name_possessive(player):
+    return str(player.get_name() + "'s") if player.get_name()[-1] != 's' else str(player.get_name() + "'")
+
 def print_help_screen():
     print("This is the help screen lalalala")
     print("This is still the help screen!!!")
@@ -86,7 +89,7 @@ def faceoff(bidder, bid, responder, unknown_dice_quantity, blind_round, blind_bi
     """
     clear_text()
     print(f"{bidder.get_name()} has made a bid of: {bid}.")
-    bidder_possessive = str(bidder.get_name() + "'s") if bidder.get_name()[-1] != 's' else str(bidder.get_name() + "'")
+    bidder_possessive = get_player_name_possessive(bidder)
     if not blind_round:
         print(f"{responder.get_name()} you rolled: {responder.get_dice()}")
         print(
@@ -298,8 +301,7 @@ class Game:
         bid = call.get_bid()
         caller = call.get_caller()
         bid_quantity = bid.get_quantity()
-        bidder_possessive = str(bidder.get_name()+"'s") if bidder.get_name()[-1] != 's' else str(bidder.get_name()+"'")
-
+        bidder_possessive = get_player_name_possessive(bidder)
 
         if isinstance(call, ExactCall):
             print(f"{caller.get_name()} has made an ExactCall against {bidder_possessive} bid of {bid}\n")
